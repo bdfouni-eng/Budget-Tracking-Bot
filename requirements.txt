@@ -1,0 +1,21 @@
+# requirements.txt for Python 3.12.10
+python-telegram-bot==20.7
+openpyxl==3.1.2
+pandas==2.1.4
+python-dotenv==1.0.0
+numpy==1.26.4
+
+# OneDrive API support
+msal==1.24.0
+requests==2.31.0
+msgraph-core==0.2.2
+
+# Optional but useful
+schedule==1.2.0
+python-crontab==3.0.0
+
+# For async operations
+aiohttp==3.9.0
+
+# System utilities
+psutil==5.9.0

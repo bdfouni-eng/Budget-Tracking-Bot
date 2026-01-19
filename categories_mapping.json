@@ -1,0 +1,1656 @@
+{
+  "Year Dropdown": [
+    "Current Year"
+  ],
+  "Period Dropdown": [
+    "Total Year",
+    "Current Month",
+    "2000-01-01 00:00:00",
+    "2000-02-01 00:00:00",
+    "2000-03-01 00:00:00",
+    "2000-04-01 00:00:00",
+    "2000-05-01 00:00:00",
+    "2000-06-01 00:00:00",
+    "2000-07-01 00:00:00",
+    "2000-08-01 00:00:00"
+  ],
+  "Total Year": [
+    "Current Month",
+    "2000-01-01 00:00:00",
+    "2000-02-01 00:00:00",
+    "2000-03-01 00:00:00",
+    "2000-04-01 00:00:00",
+    "2000-05-01 00:00:00",
+    "2000-06-01 00:00:00",
+    "2000-07-01 00:00:00",
+    "2000-08-01 00:00:00",
+    "2000-09-01 00:00:00"
+  ],
+  "Current Month": [
+    "2000-01-01 00:00:00",
+    "2000-02-01 00:00:00",
+    "2000-03-01 00:00:00",
+    "2000-04-01 00:00:00",
+    "2000-05-01 00:00:00",
+    "2000-06-01 00:00:00",
+    "2000-07-01 00:00:00",
+    "2000-08-01 00:00:00",
+    "2000-09-01 00:00:00",
+    "2000-10-01 00:00:00"
+  ],
+  "2000-01-01 00:00:00": [
+    "2000-02-01 00:00:00",
+    "2000-03-01 00:00:00",
+    "2000-04-01 00:00:00",
+    "2000-05-01 00:00:00",
+    "2000-06-01 00:00:00",
+    "2000-07-01 00:00:00",
+    "2000-08-01 00:00:00",
+    "2000-09-01 00:00:00",
+    "2000-10-01 00:00:00",
+    "2000-11-01 00:00:00"
+  ],
+  "2000-02-01 00:00:00": [
+    "2000-03-01 00:00:00",
+    "2000-04-01 00:00:00",
+    "2000-05-01 00:00:00",
+    "2000-06-01 00:00:00",
+    "2000-07-01 00:00:00",
+    "2000-08-01 00:00:00",
+    "2000-09-01 00:00:00",
+    "2000-10-01 00:00:00",
+    "2000-11-01 00:00:00",
+    "2000-12-01 00:00:00"
+  ],
+  "2000-03-01 00:00:00": [
+    "2000-04-01 00:00:00",
+    "2000-05-01 00:00:00",
+    "2000-06-01 00:00:00",
+    "2000-07-01 00:00:00",
+    "2000-08-01 00:00:00",
+    "2000-09-01 00:00:00",
+    "2000-10-01 00:00:00",
+    "2000-11-01 00:00:00",
+    "2000-12-01 00:00:00"
+  ],
+  "2000-04-01 00:00:00": [
+    "2000-05-01 00:00:00",
+    "2000-06-01 00:00:00",
+    "2000-07-01 00:00:00",
+    "2000-08-01 00:00:00",
+    "2000-09-01 00:00:00",
+    "2000-10-01 00:00:00",
+    "2000-11-01 00:00:00",
+    "2000-12-01 00:00:00"
+  ],
+  "2000-05-01 00:00:00": [
+    "2000-06-01 00:00:00",
+    "2000-07-01 00:00:00",
+    "2000-08-01 00:00:00",
+    "2000-09-01 00:00:00",
+    "2000-10-01 00:00:00",
+    "2000-11-01 00:00:00",
+    "2000-12-01 00:00:00"
+  ],
+  "2000-06-01 00:00:00": [
+    "2000-07-01 00:00:00",
+    "2000-08-01 00:00:00",
+    "2000-09-01 00:00:00",
+    "2000-10-01 00:00:00",
+    "2000-11-01 00:00:00",
+    "2000-12-01 00:00:00"
+  ],
+  "2000-07-01 00:00:00": [
+    "2000-08-01 00:00:00",
+    "2000-09-01 00:00:00",
+    "2000-10-01 00:00:00",
+    "2000-11-01 00:00:00",
+    "2000-12-01 00:00:00"
+  ],
+  "2000-08-01 00:00:00": [
+    "2000-09-01 00:00:00",
+    "2000-10-01 00:00:00",
+    "2000-11-01 00:00:00",
+    "2000-12-01 00:00:00"
+  ],
+  "2000-09-01 00:00:00": [
+    "2000-10-01 00:00:00",
+    "2000-11-01 00:00:00",
+    "2000-12-01 00:00:00"
+  ],
+  "2000-10-01 00:00:00": [
+    "2000-11-01 00:00:00",
+    "2000-12-01 00:00:00"
+  ],
+  "2000-11-01 00:00:00": [
+    "2000-12-01 00:00:00"
+  ],
+  "Groceries": [
+    "Bakery Products (AL-Khabaz)",
+    "Bakery Products (Moulin D'or)",
+    "Bakery Products (Chamsin)",
+    "Spinneys",
+    "KSC",
+    "Le Charcutier",
+    "Mansour",
+    "Yalla",
+    "Dekerco",
+    "Rahme Buchery (Tripoli)"
+  ],
+  "Bakery Products (AL-Khabaz)": [
+    "Bakery Products (Moulin D'or)",
+    "Bakery Products (Chamsin)",
+    "Spinneys",
+    "KSC",
+    "Le Charcutier",
+    "Mansour",
+    "Yalla",
+    "Dekerco",
+    "Rahme Buchery (Tripoli)",
+    "Halim"
+  ],
+  "Bakery Products (Moulin D'or)": [
+    "Bakery Products (Chamsin)",
+    "Spinneys",
+    "KSC",
+    "Le Charcutier",
+    "Mansour",
+    "Yalla",
+    "Dekerco",
+    "Rahme Buchery (Tripoli)",
+    "Halim",
+    "Toni Bacho Haikal"
+  ],
+  "Bakery Products (Chamsin)": [
+    "Spinneys",
+    "KSC",
+    "Le Charcutier",
+    "Mansour",
+    "Yalla",
+    "Dekerco",
+    "Rahme Buchery (Tripoli)",
+    "Halim",
+    "Toni Bacho Haikal",
+    "Supermarket Jbeil"
+  ],
+  "Spinneys": [
+    "KSC",
+    "Le Charcutier",
+    "Mansour",
+    "Yalla",
+    "Dekerco",
+    "Rahme Buchery (Tripoli)",
+    "Halim",
+    "Toni Bacho Haikal",
+    "Supermarket Jbeil",
+    "Bakery Products (Keyrouz)"
+  ],
+  "KSC": [
+    "Le Charcutier",
+    "Mansour",
+    "Yalla",
+    "Dekerco",
+    "Rahme Buchery (Tripoli)",
+    "Halim",
+    "Toni Bacho Haikal",
+    "Supermarket Jbeil",
+    "Bakery Products (Keyrouz)",
+    "Bakery Products (Pain d'or)"
+  ],
+  "Le Charcutier": [
+    "Mansour",
+    "Yalla",
+    "Dekerco",
+    "Rahme Buchery (Tripoli)",
+    "Halim",
+    "Toni Bacho Haikal",
+    "Supermarket Jbeil",
+    "Bakery Products (Keyrouz)",
+    "Bakery Products (Pain d'or)",
+    "Bakery Products (Wooden Bakery)"
+  ],
+  "Mansour": [
+    "Yalla",
+    "Dekerco",
+    "Rahme Buchery (Tripoli)",
+    "Halim",
+    "Toni Bacho Haikal",
+    "Supermarket Jbeil",
+    "Bakery Products (Keyrouz)",
+    "Bakery Products (Pain d'or)",
+    "Bakery Products (Wooden Bakery)",
+    "Hawa Chicken"
+  ],
+  "Yalla": [
+    "Dekerco",
+    "Rahme Buchery (Tripoli)",
+    "Halim",
+    "Toni Bacho Haikal",
+    "Supermarket Jbeil",
+    "Bakery Products (Keyrouz)",
+    "Bakery Products (Pain d'or)",
+    "Bakery Products (Wooden Bakery)",
+    "Hawa Chicken",
+    "Fruits & Vegetables Market (Nahr Ibrahim)"
+  ],
+  "Dekerco": [
+    "Rahme Buchery (Tripoli)",
+    "Halim",
+    "Toni Bacho Haikal",
+    "Supermarket Jbeil",
+    "Bakery Products (Keyrouz)",
+    "Bakery Products (Pain d'or)",
+    "Bakery Products (Wooden Bakery)",
+    "Hawa Chicken",
+    "Fruits & Vegetables Market (Nahr Ibrahim)",
+    "Fruits & Vegetables Market (Tripoli)"
+  ],
+  "Rahme Buchery (Tripoli)": [
+    "Halim",
+    "Toni Bacho Haikal",
+    "Supermarket Jbeil",
+    "Bakery Products (Keyrouz)",
+    "Bakery Products (Pain d'or)",
+    "Bakery Products (Wooden Bakery)",
+    "Hawa Chicken",
+    "Fruits & Vegetables Market (Nahr Ibrahim)",
+    "Fruits & Vegetables Market (Tripoli)",
+    "Jar Honey"
+  ],
+  "Halim": [
+    "Toni Bacho Haikal",
+    "Supermarket Jbeil",
+    "Bakery Products (Keyrouz)",
+    "Bakery Products (Pain d'or)",
+    "Bakery Products (Wooden Bakery)",
+    "Hawa Chicken",
+    "Fruits & Vegetables Market (Nahr Ibrahim)",
+    "Fruits & Vegetables Market (Tripoli)",
+    "Jar Honey",
+    "Al-Andalos"
+  ],
+  "Toni Bacho Haikal": [
+    "Supermarket Jbeil",
+    "Bakery Products (Keyrouz)",
+    "Bakery Products (Pain d'or)",
+    "Bakery Products (Wooden Bakery)",
+    "Hawa Chicken",
+    "Fruits & Vegetables Market (Nahr Ibrahim)",
+    "Fruits & Vegetables Market (Tripoli)",
+    "Jar Honey",
+    "Al-Andalos",
+    "Bakery Products (Roi Du Pain)"
+  ],
+  "Supermarket Jbeil": [
+    "Bakery Products (Keyrouz)",
+    "Bakery Products (Pain d'or)",
+    "Bakery Products (Wooden Bakery)",
+    "Hawa Chicken",
+    "Fruits & Vegetables Market (Nahr Ibrahim)",
+    "Fruits & Vegetables Market (Tripoli)",
+    "Jar Honey",
+    "Al-Andalos",
+    "Bakery Products (Roi Du Pain)",
+    "Rond Point SuperMarket"
+  ],
+  "Bakery Products (Keyrouz)": [
+    "Bakery Products (Pain d'or)",
+    "Bakery Products (Wooden Bakery)",
+    "Hawa Chicken",
+    "Fruits & Vegetables Market (Nahr Ibrahim)",
+    "Fruits & Vegetables Market (Tripoli)",
+    "Jar Honey",
+    "Al-Andalos",
+    "Bakery Products (Roi Du Pain)",
+    "Rond Point SuperMarket",
+    "Habbet Misk"
+  ],
+  "Bakery Products (Pain d'or)": [
+    "Bakery Products (Wooden Bakery)",
+    "Hawa Chicken",
+    "Fruits & Vegetables Market (Nahr Ibrahim)",
+    "Fruits & Vegetables Market (Tripoli)",
+    "Jar Honey",
+    "Al-Andalos",
+    "Bakery Products (Roi Du Pain)",
+    "Rond Point SuperMarket",
+    "Habbet Misk",
+    "Nohra Seafood"
+  ],
+  "Bakery Products (Wooden Bakery)": [
+    "Hawa Chicken",
+    "Fruits & Vegetables Market (Nahr Ibrahim)",
+    "Fruits & Vegetables Market (Tripoli)",
+    "Jar Honey",
+    "Al-Andalos",
+    "Bakery Products (Roi Du Pain)",
+    "Rond Point SuperMarket",
+    "Habbet Misk",
+    "Nohra Seafood",
+    "Akiki Freres"
+  ],
+  "Hawa Chicken": [
+    "Fruits & Vegetables Market (Nahr Ibrahim)",
+    "Fruits & Vegetables Market (Tripoli)",
+    "Jar Honey",
+    "Al-Andalos",
+    "Bakery Products (Roi Du Pain)",
+    "Rond Point SuperMarket",
+    "Habbet Misk",
+    "Nohra Seafood",
+    "Akiki Freres",
+    "Salameh"
+  ],
+  "Fruits & Vegetables Market (Nahr Ibrahim)": [
+    "Fruits & Vegetables Market (Tripoli)",
+    "Jar Honey",
+    "Al-Andalos",
+    "Bakery Products (Roi Du Pain)",
+    "Rond Point SuperMarket",
+    "Habbet Misk",
+    "Nohra Seafood",
+    "Akiki Freres",
+    "Salameh",
+    "Akiki Freres"
+  ],
+  "Fruits & Vegetables Market (Tripoli)": [
+    "Jar Honey",
+    "Al-Andalos",
+    "Bakery Products (Roi Du Pain)",
+    "Rond Point SuperMarket",
+    "Habbet Misk",
+    "Nohra Seafood",
+    "Akiki Freres",
+    "Salameh",
+    "Akiki Freres",
+    "Box For Less"
+  ],
+  "Jar Honey": [
+    "Al-Andalos",
+    "Bakery Products (Roi Du Pain)",
+    "Rond Point SuperMarket",
+    "Habbet Misk",
+    "Nohra Seafood",
+    "Akiki Freres",
+    "Salameh",
+    "Akiki Freres",
+    "Box For Less",
+    "Dairy Products Rachana"
+  ],
+  "Al-Andalos": [
+    "Bakery Products (Roi Du Pain)",
+    "Rond Point SuperMarket",
+    "Habbet Misk",
+    "Nohra Seafood",
+    "Akiki Freres",
+    "Salameh",
+    "Akiki Freres",
+    "Box For Less",
+    "Dairy Products Rachana"
+  ],
+  "Bakery Products (Roi Du Pain)": [
+    "Rond Point SuperMarket",
+    "Habbet Misk",
+    "Nohra Seafood",
+    "Akiki Freres",
+    "Salameh",
+    "Akiki Freres",
+    "Box For Less",
+    "Dairy Products Rachana"
+  ],
+  "Rond Point SuperMarket": [
+    "Habbet Misk",
+    "Nohra Seafood",
+    "Akiki Freres",
+    "Salameh",
+    "Akiki Freres",
+    "Box For Less",
+    "Dairy Products Rachana"
+  ],
+  "Habbet Misk": [
+    "Nohra Seafood",
+    "Akiki Freres",
+    "Salameh",
+    "Akiki Freres",
+    "Box For Less",
+    "Dairy Products Rachana"
+  ],
+  "Nohra Seafood": [
+    "Akiki Freres",
+    "Salameh",
+    "Akiki Freres",
+    "Box For Less",
+    "Dairy Products Rachana"
+  ],
+  "Akiki Freres": [
+    "Box For Less",
+    "Dairy Products Rachana"
+  ],
+  "Salameh": [
+    "Akiki Freres",
+    "Box For Less",
+    "Dairy Products Rachana"
+  ],
+  "Box For Less": [
+    "Dairy Products Rachana"
+  ],
+  "Dining Out": [
+    "McDonald's (Big Tasty Sauce)",
+    "Dunkin Donuts",
+    "Hajj Nasr",
+    "Hamra Furn",
+    "Furn Al Wadi",
+    "Al-Abdallah",
+    "Hallab 1881",
+    "Refaat-Al-Hallab",
+    "Abeille D'or",
+    "SeaSweet"
+  ],
+  "McDonald's (Big Tasty Sauce)": [
+    "Dunkin Donuts",
+    "Hajj Nasr",
+    "Hamra Furn",
+    "Furn Al Wadi",
+    "Al-Abdallah",
+    "Hallab 1881",
+    "Refaat-Al-Hallab",
+    "Abeille D'or",
+    "SeaSweet",
+    "Si Bon"
+  ],
+  "Dunkin Donuts": [
+    "Hajj Nasr",
+    "Hamra Furn",
+    "Furn Al Wadi",
+    "Al-Abdallah",
+    "Hallab 1881",
+    "Refaat-Al-Hallab",
+    "Abeille D'or",
+    "SeaSweet",
+    "Si Bon",
+    "Swiss Butter"
+  ],
+  "Hajj Nasr": [
+    "Hamra Furn",
+    "Furn Al Wadi",
+    "Al-Abdallah",
+    "Hallab 1881",
+    "Refaat-Al-Hallab",
+    "Abeille D'or",
+    "SeaSweet",
+    "Si Bon",
+    "Swiss Butter",
+    "BIG MIKE'S"
+  ],
+  "Hamra Furn": [
+    "Furn Al Wadi",
+    "Al-Abdallah",
+    "Hallab 1881",
+    "Refaat-Al-Hallab",
+    "Abeille D'or",
+    "SeaSweet",
+    "Si Bon",
+    "Swiss Butter",
+    "BIG MIKE'S",
+    "Crepaway"
+  ],
+  "Furn Al Wadi": [
+    "Al-Abdallah",
+    "Hallab 1881",
+    "Refaat-Al-Hallab",
+    "Abeille D'or",
+    "SeaSweet",
+    "Si Bon",
+    "Swiss Butter",
+    "BIG MIKE'S",
+    "Crepaway",
+    "Furn Merchak"
+  ],
+  "Al-Abdallah": [
+    "Hallab 1881",
+    "Refaat-Al-Hallab",
+    "Abeille D'or",
+    "SeaSweet",
+    "Si Bon",
+    "Swiss Butter",
+    "BIG MIKE'S",
+    "Crepaway",
+    "Furn Merchak",
+    "Libre Beirut"
+  ],
+  "Hallab 1881": [
+    "Refaat-Al-Hallab",
+    "Abeille D'or",
+    "SeaSweet",
+    "Si Bon",
+    "Swiss Butter",
+    "BIG MIKE'S",
+    "Crepaway",
+    "Furn Merchak",
+    "Libre Beirut",
+    "Mont Croissant"
+  ],
+  "Refaat-Al-Hallab": [
+    "Abeille D'or",
+    "SeaSweet",
+    "Si Bon",
+    "Swiss Butter",
+    "BIG MIKE'S",
+    "Crepaway",
+    "Furn Merchak",
+    "Libre Beirut",
+    "Mont Croissant",
+    "Basterma Mano"
+  ],
+  "Abeille D'or": [
+    "SeaSweet",
+    "Si Bon",
+    "Swiss Butter",
+    "BIG MIKE'S",
+    "Crepaway",
+    "Furn Merchak",
+    "Libre Beirut",
+    "Mont Croissant",
+    "Basterma Mano",
+    "Barley & Bean"
+  ],
+  "SeaSweet": [
+    "Si Bon",
+    "Swiss Butter",
+    "BIG MIKE'S",
+    "Crepaway",
+    "Furn Merchak",
+    "Libre Beirut",
+    "Mont Croissant",
+    "Basterma Mano",
+    "Barley & Bean",
+    "THINKERS"
+  ],
+  "Si Bon": [
+    "Swiss Butter",
+    "BIG MIKE'S",
+    "Crepaway",
+    "Furn Merchak",
+    "Libre Beirut",
+    "Mont Croissant",
+    "Basterma Mano",
+    "Barley & Bean",
+    "THINKERS",
+    "Chesse On Top"
+  ],
+  "Swiss Butter": [
+    "BIG MIKE'S",
+    "Crepaway",
+    "Furn Merchak",
+    "Libre Beirut",
+    "Mont Croissant",
+    "Basterma Mano",
+    "Barley & Bean",
+    "THINKERS",
+    "Chesse On Top",
+    "Jonas Street Café"
+  ],
+  "BIG MIKE'S": [
+    "Crepaway",
+    "Furn Merchak",
+    "Libre Beirut",
+    "Mont Croissant",
+    "Basterma Mano",
+    "Barley & Bean",
+    "THINKERS",
+    "Chesse On Top",
+    "Jonas Street Café",
+    "Ahmad Al-Abdallah"
+  ],
+  "Crepaway": [
+    "Furn Merchak",
+    "Libre Beirut",
+    "Mont Croissant",
+    "Basterma Mano",
+    "Barley & Bean",
+    "THINKERS",
+    "Chesse On Top",
+    "Jonas Street Café",
+    "Ahmad Al-Abdallah",
+    "Malak el Taouk"
+  ],
+  "Furn Merchak": [
+    "Libre Beirut",
+    "Mont Croissant",
+    "Basterma Mano",
+    "Barley & Bean",
+    "THINKERS",
+    "Chesse On Top",
+    "Jonas Street Café",
+    "Ahmad Al-Abdallah",
+    "Malak el Taouk",
+    "Abou Arab"
+  ],
+  "Libre Beirut": [
+    "Mont Croissant",
+    "Basterma Mano",
+    "Barley & Bean",
+    "THINKERS",
+    "Chesse On Top",
+    "Jonas Street Café",
+    "Ahmad Al-Abdallah",
+    "Malak el Taouk",
+    "Abou Arab",
+    "Berry Bites"
+  ],
+  "Mont Croissant": [
+    "Basterma Mano",
+    "Barley & Bean",
+    "THINKERS",
+    "Chesse On Top",
+    "Jonas Street Café",
+    "Ahmad Al-Abdallah",
+    "Malak el Taouk",
+    "Abou Arab",
+    "Berry Bites",
+    "Foren Chaptini (Nawal)"
+  ],
+  "Basterma Mano": [
+    "Barley & Bean",
+    "THINKERS",
+    "Chesse On Top",
+    "Jonas Street Café",
+    "Ahmad Al-Abdallah",
+    "Malak el Taouk",
+    "Abou Arab",
+    "Berry Bites",
+    "Foren Chaptini (Nawal)",
+    "Latte Art"
+  ],
+  "Barley & Bean": [
+    "THINKERS",
+    "Chesse On Top",
+    "Jonas Street Café",
+    "Ahmad Al-Abdallah",
+    "Malak el Taouk",
+    "Abou Arab",
+    "Berry Bites",
+    "Foren Chaptini (Nawal)",
+    "Latte Art",
+    "New Yorker Cup"
+  ],
+  "THINKERS": [
+    "Chesse On Top",
+    "Jonas Street Café",
+    "Ahmad Al-Abdallah",
+    "Malak el Taouk",
+    "Abou Arab",
+    "Berry Bites",
+    "Foren Chaptini (Nawal)",
+    "Latte Art",
+    "New Yorker Cup",
+    "EdenBurg Batroun"
+  ],
+  "Chesse On Top": [
+    "Jonas Street Café",
+    "Ahmad Al-Abdallah",
+    "Malak el Taouk",
+    "Abou Arab",
+    "Berry Bites",
+    "Foren Chaptini (Nawal)",
+    "Latte Art",
+    "New Yorker Cup",
+    "EdenBurg Batroun",
+    "Hungry Shack Batroun"
+  ],
+  "Jonas Street Café": [
+    "Ahmad Al-Abdallah",
+    "Malak el Taouk",
+    "Abou Arab",
+    "Berry Bites",
+    "Foren Chaptini (Nawal)",
+    "Latte Art",
+    "New Yorker Cup",
+    "EdenBurg Batroun",
+    "Hungry Shack Batroun",
+    "Furn Beino"
+  ],
+  "Ahmad Al-Abdallah": [
+    "Malak el Taouk",
+    "Abou Arab",
+    "Berry Bites",
+    "Foren Chaptini (Nawal)",
+    "Latte Art",
+    "New Yorker Cup",
+    "EdenBurg Batroun",
+    "Hungry Shack Batroun",
+    "Furn Beino",
+    "Anthony's Diner"
+  ],
+  "Malak el Taouk": [
+    "Abou Arab",
+    "Berry Bites",
+    "Foren Chaptini (Nawal)",
+    "Latte Art",
+    "New Yorker Cup",
+    "EdenBurg Batroun",
+    "Hungry Shack Batroun",
+    "Furn Beino",
+    "Anthony's Diner",
+    "Roadster Diner"
+  ],
+  "Abou Arab": [
+    "Berry Bites",
+    "Foren Chaptini (Nawal)",
+    "Latte Art",
+    "New Yorker Cup",
+    "EdenBurg Batroun",
+    "Hungry Shack Batroun",
+    "Furn Beino",
+    "Anthony's Diner",
+    "Roadster Diner",
+    "Kaak Abou Arab"
+  ],
+  "Berry Bites": [
+    "Foren Chaptini (Nawal)",
+    "Latte Art",
+    "New Yorker Cup",
+    "EdenBurg Batroun",
+    "Hungry Shack Batroun",
+    "Furn Beino",
+    "Anthony's Diner",
+    "Roadster Diner",
+    "Kaak Abou Arab",
+    "Baguette de Paris"
+  ],
+  "Foren Chaptini (Nawal)": [
+    "Latte Art",
+    "New Yorker Cup",
+    "EdenBurg Batroun",
+    "Hungry Shack Batroun",
+    "Furn Beino",
+    "Anthony's Diner",
+    "Roadster Diner",
+    "Kaak Abou Arab",
+    "Baguette de Paris",
+    "Sandwich w noss"
+  ],
+  "Latte Art": [
+    "New Yorker Cup",
+    "EdenBurg Batroun",
+    "Hungry Shack Batroun",
+    "Furn Beino",
+    "Anthony's Diner",
+    "Roadster Diner",
+    "Kaak Abou Arab",
+    "Baguette de Paris",
+    "Sandwich w noss",
+    "Provencial"
+  ],
+  "New Yorker Cup": [
+    "EdenBurg Batroun",
+    "Hungry Shack Batroun",
+    "Furn Beino",
+    "Anthony's Diner",
+    "Roadster Diner",
+    "Kaak Abou Arab",
+    "Baguette de Paris",
+    "Sandwich w noss",
+    "Provencial",
+    "King Fadi"
+  ],
+  "EdenBurg Batroun": [
+    "Hungry Shack Batroun",
+    "Furn Beino",
+    "Anthony's Diner",
+    "Roadster Diner",
+    "Kaak Abou Arab",
+    "Baguette de Paris",
+    "Sandwich w noss",
+    "Provencial",
+    "King Fadi",
+    "Kaaketna Lebneniye"
+  ],
+  "Hungry Shack Batroun": [
+    "Furn Beino",
+    "Anthony's Diner",
+    "Roadster Diner",
+    "Kaak Abou Arab",
+    "Baguette de Paris",
+    "Sandwich w noss",
+    "Provencial",
+    "King Fadi",
+    "Kaaketna Lebneniye",
+    "Massoud"
+  ],
+  "Furn Beino": [
+    "Anthony's Diner",
+    "Roadster Diner",
+    "Kaak Abou Arab",
+    "Baguette de Paris",
+    "Sandwich w noss",
+    "Provencial",
+    "King Fadi",
+    "Kaaketna Lebneniye",
+    "Massoud",
+    "Hayat Doner"
+  ],
+  "Anthony's Diner": [
+    "Roadster Diner",
+    "Kaak Abou Arab",
+    "Baguette de Paris",
+    "Sandwich w noss",
+    "Provencial",
+    "King Fadi",
+    "Kaaketna Lebneniye",
+    "Massoud",
+    "Hayat Doner",
+    "Smashed Burger Joint"
+  ],
+  "Roadster Diner": [
+    "Kaak Abou Arab",
+    "Baguette de Paris",
+    "Sandwich w noss",
+    "Provencial",
+    "King Fadi",
+    "Kaaketna Lebneniye",
+    "Massoud",
+    "Hayat Doner",
+    "Smashed Burger Joint",
+    "Foren Abou Elias"
+  ],
+  "Kaak Abou Arab": [
+    "Baguette de Paris",
+    "Sandwich w noss",
+    "Provencial",
+    "King Fadi",
+    "Kaaketna Lebneniye",
+    "Massoud",
+    "Hayat Doner",
+    "Smashed Burger Joint",
+    "Foren Abou Elias",
+    "TIMO Beirut"
+  ],
+  "Baguette de Paris": [
+    "Sandwich w noss",
+    "Provencial",
+    "King Fadi",
+    "Kaaketna Lebneniye",
+    "Massoud",
+    "Hayat Doner",
+    "Smashed Burger Joint",
+    "Foren Abou Elias",
+    "TIMO Beirut",
+    "Pierre Y Amigos"
+  ],
+  "Sandwich w noss": [
+    "Provencial",
+    "King Fadi",
+    "Kaaketna Lebneniye",
+    "Massoud",
+    "Hayat Doner",
+    "Smashed Burger Joint",
+    "Foren Abou Elias",
+    "TIMO Beirut",
+    "Pierre Y Amigos",
+    "Bolero"
+  ],
+  "Provencial": [
+    "King Fadi",
+    "Kaaketna Lebneniye",
+    "Massoud",
+    "Hayat Doner",
+    "Smashed Burger Joint",
+    "Foren Abou Elias",
+    "TIMO Beirut",
+    "Pierre Y Amigos",
+    "Bolero",
+    "Saj Em Nassif"
+  ],
+  "King Fadi": [
+    "Kaaketna Lebneniye",
+    "Massoud",
+    "Hayat Doner",
+    "Smashed Burger Joint",
+    "Foren Abou Elias",
+    "TIMO Beirut",
+    "Pierre Y Amigos",
+    "Bolero",
+    "Saj Em Nassif",
+    "Baguette Gourmet"
+  ],
+  "Kaaketna Lebneniye": [
+    "Massoud",
+    "Hayat Doner",
+    "Smashed Burger Joint",
+    "Foren Abou Elias",
+    "TIMO Beirut",
+    "Pierre Y Amigos",
+    "Bolero",
+    "Saj Em Nassif",
+    "Baguette Gourmet",
+    "Uncle Fluffy"
+  ],
+  "Massoud": [
+    "Hayat Doner",
+    "Smashed Burger Joint",
+    "Foren Abou Elias",
+    "TIMO Beirut",
+    "Pierre Y Amigos",
+    "Bolero",
+    "Saj Em Nassif",
+    "Baguette Gourmet",
+    "Uncle Fluffy",
+    "Phill & Will"
+  ],
+  "Hayat Doner": [
+    "Smashed Burger Joint",
+    "Foren Abou Elias",
+    "TIMO Beirut",
+    "Pierre Y Amigos",
+    "Bolero",
+    "Saj Em Nassif",
+    "Baguette Gourmet",
+    "Uncle Fluffy",
+    "Phill & Will",
+    "Zaatar w Zeit"
+  ],
+  "Smashed Burger Joint": [
+    "Foren Abou Elias",
+    "TIMO Beirut",
+    "Pierre Y Amigos",
+    "Bolero",
+    "Saj Em Nassif",
+    "Baguette Gourmet",
+    "Uncle Fluffy",
+    "Phill & Will",
+    "Zaatar w Zeit",
+    "Pink Berry"
+  ],
+  "Foren Abou Elias": [
+    "TIMO Beirut",
+    "Pierre Y Amigos",
+    "Bolero",
+    "Saj Em Nassif",
+    "Baguette Gourmet",
+    "Uncle Fluffy",
+    "Phill & Will",
+    "Zaatar w Zeit",
+    "Pink Berry",
+    "Kebab Sevag"
+  ],
+  "TIMO Beirut": [
+    "Pierre Y Amigos",
+    "Bolero",
+    "Saj Em Nassif",
+    "Baguette Gourmet",
+    "Uncle Fluffy",
+    "Phill & Will",
+    "Zaatar w Zeit",
+    "Pink Berry",
+    "Kebab Sevag",
+    "Glow Paradise"
+  ],
+  "Pierre Y Amigos": [
+    "Bolero",
+    "Saj Em Nassif",
+    "Baguette Gourmet",
+    "Uncle Fluffy",
+    "Phill & Will",
+    "Zaatar w Zeit",
+    "Pink Berry",
+    "Kebab Sevag",
+    "Glow Paradise",
+    "Al-Daouk Sweets"
+  ],
+  "Bolero": [
+    "Saj Em Nassif",
+    "Baguette Gourmet",
+    "Uncle Fluffy",
+    "Phill & Will",
+    "Zaatar w Zeit",
+    "Pink Berry",
+    "Kebab Sevag",
+    "Glow Paradise",
+    "Al-Daouk Sweets",
+    "Joe & The Juice"
+  ],
+  "Saj Em Nassif": [
+    "Baguette Gourmet",
+    "Uncle Fluffy",
+    "Phill & Will",
+    "Zaatar w Zeit",
+    "Pink Berry",
+    "Kebab Sevag",
+    "Glow Paradise",
+    "Al-Daouk Sweets",
+    "Joe & The Juice"
+  ],
+  "Baguette Gourmet": [
+    "Uncle Fluffy",
+    "Phill & Will",
+    "Zaatar w Zeit",
+    "Pink Berry",
+    "Kebab Sevag",
+    "Glow Paradise",
+    "Al-Daouk Sweets",
+    "Joe & The Juice"
+  ],
+  "Uncle Fluffy": [
+    "Phill & Will",
+    "Zaatar w Zeit",
+    "Pink Berry",
+    "Kebab Sevag",
+    "Glow Paradise",
+    "Al-Daouk Sweets",
+    "Joe & The Juice"
+  ],
+  "Phill & Will": [
+    "Zaatar w Zeit",
+    "Pink Berry",
+    "Kebab Sevag",
+    "Glow Paradise",
+    "Al-Daouk Sweets",
+    "Joe & The Juice"
+  ],
+  "Zaatar w Zeit": [
+    "Pink Berry",
+    "Kebab Sevag",
+    "Glow Paradise",
+    "Al-Daouk Sweets",
+    "Joe & The Juice"
+  ],
+  "Pink Berry": [
+    "Kebab Sevag",
+    "Glow Paradise",
+    "Al-Daouk Sweets",
+    "Joe & The Juice"
+  ],
+  "Kebab Sevag": [
+    "Glow Paradise",
+    "Al-Daouk Sweets",
+    "Joe & The Juice"
+  ],
+  "Glow Paradise": [
+    "Al-Daouk Sweets",
+    "Joe & The Juice"
+  ],
+  "Al-Daouk Sweets": [
+    "Joe & The Juice"
+  ],
+  "Transportation": [
+    "Fuel (Opel)",
+    "Fuel (Mazda)",
+    "(Taxi/Service/Bus)"
+  ],
+  "Fuel (Opel)": [
+    "Fuel (Mazda)",
+    "(Taxi/Service/Bus)"
+  ],
+  "Fuel (Mazda)": [
+    "(Taxi/Service/Bus)"
+  ],
+  "Family Support": [
+    "Cash For Rafca"
+  ],
+  "Donation": [
+    "Random People On The Streets"
+  ],
+  "Utilities": [
+    "Generator",
+    "EDL",
+    "Internet Ogero",
+    "Internet Chadi",
+    "Landline",
+    "Water Governement",
+    "Gas",
+    "Mobile Phone Bill"
+  ],
+  "Generator": [
+    "EDL",
+    "Internet Ogero",
+    "Internet Chadi",
+    "Landline",
+    "Water Governement",
+    "Gas",
+    "Mobile Phone Bill"
+  ],
+  "EDL": [
+    "Internet Ogero",
+    "Internet Chadi",
+    "Landline",
+    "Water Governement",
+    "Gas",
+    "Mobile Phone Bill"
+  ],
+  "Internet Ogero": [
+    "Internet Chadi",
+    "Landline",
+    "Water Governement",
+    "Gas",
+    "Mobile Phone Bill"
+  ],
+  "Internet Chadi": [
+    "Landline",
+    "Water Governement",
+    "Gas",
+    "Mobile Phone Bill"
+  ],
+  "Landline": [
+    "Water Governement",
+    "Gas",
+    "Mobile Phone Bill"
+  ],
+  "Water Governement": [
+    "Gas",
+    "Mobile Phone Bill"
+  ],
+  "Gas": [
+    "Mobile Phone Bill"
+  ],
+  "Entertainment": [
+    "Basketball Game",
+    "Bike Ride",
+    "Board Games (Aura)",
+    "Board Games (On Board)",
+    "Movies",
+    "Board Games (Dice)",
+    "Christmass Market"
+  ],
+  "Basketball Game": [
+    "Bike Ride",
+    "Board Games (Aura)",
+    "Board Games (On Board)",
+    "Movies",
+    "Board Games (Dice)",
+    "Christmass Market"
+  ],
+  "Bike Ride": [
+    "Board Games (Aura)",
+    "Board Games (On Board)",
+    "Movies",
+    "Board Games (Dice)",
+    "Christmass Market"
+  ],
+  "Board Games (Aura)": [
+    "Board Games (On Board)",
+    "Movies",
+    "Board Games (Dice)",
+    "Christmass Market"
+  ],
+  "Board Games (On Board)": [
+    "Movies",
+    "Board Games (Dice)",
+    "Christmass Market"
+  ],
+  "Movies": [
+    "Board Games (Dice)",
+    "Christmass Market"
+  ],
+  "Board Games (Dice)": [
+    "Christmass Market"
+  ],
+  "Shopping": [
+    "Burda",
+    "Koton Mall",
+    "SpringField",
+    "Saxon Wear",
+    "Denise Batroun",
+    "Chapeau Bas Batroun",
+    "Just Move",
+    "Decathlon",
+    "Zara",
+    "Berchka"
+  ],
+  "Burda": [
+    "Koton Mall",
+    "SpringField",
+    "Saxon Wear",
+    "Denise Batroun",
+    "Chapeau Bas Batroun",
+    "Just Move",
+    "Decathlon",
+    "Zara",
+    "Berchka",
+    "Pull & Bear"
+  ],
+  "Koton Mall": [
+    "SpringField",
+    "Saxon Wear",
+    "Denise Batroun",
+    "Chapeau Bas Batroun",
+    "Just Move",
+    "Decathlon",
+    "Zara",
+    "Berchka",
+    "Pull & Bear",
+    "Jack & Jones"
+  ],
+  "SpringField": [
+    "Saxon Wear",
+    "Denise Batroun",
+    "Chapeau Bas Batroun",
+    "Just Move",
+    "Decathlon",
+    "Zara",
+    "Berchka",
+    "Pull & Bear",
+    "Jack & Jones",
+    "Mike Sport Outlet"
+  ],
+  "Saxon Wear": [
+    "Denise Batroun",
+    "Chapeau Bas Batroun",
+    "Just Move",
+    "Decathlon",
+    "Zara",
+    "Berchka",
+    "Pull & Bear",
+    "Jack & Jones",
+    "Mike Sport Outlet",
+    "Celio"
+  ],
+  "Denise Batroun": [
+    "Chapeau Bas Batroun",
+    "Just Move",
+    "Decathlon",
+    "Zara",
+    "Berchka",
+    "Pull & Bear",
+    "Jack & Jones",
+    "Mike Sport Outlet",
+    "Celio",
+    "Feel 22 Website"
+  ],
+  "Chapeau Bas Batroun": [
+    "Just Move",
+    "Decathlon",
+    "Zara",
+    "Berchka",
+    "Pull & Bear",
+    "Jack & Jones",
+    "Mike Sport Outlet",
+    "Celio",
+    "Feel 22 Website",
+    "J-Tech"
+  ],
+  "Just Move": [
+    "Decathlon",
+    "Zara",
+    "Berchka",
+    "Pull & Bear",
+    "Jack & Jones",
+    "Mike Sport Outlet",
+    "Celio",
+    "Feel 22 Website",
+    "J-Tech",
+    "Trayumf Jbeil"
+  ],
+  "Decathlon": [
+    "Zara",
+    "Berchka",
+    "Pull & Bear",
+    "Jack & Jones",
+    "Mike Sport Outlet",
+    "Celio",
+    "Feel 22 Website",
+    "J-Tech",
+    "Trayumf Jbeil",
+    "Online Shop"
+  ],
+  "Zara": [
+    "Berchka",
+    "Pull & Bear",
+    "Jack & Jones",
+    "Mike Sport Outlet",
+    "Celio",
+    "Feel 22 Website",
+    "J-Tech",
+    "Trayumf Jbeil",
+    "Online Shop",
+    "Maison Brown"
+  ],
+  "Berchka": [
+    "Pull & Bear",
+    "Jack & Jones",
+    "Mike Sport Outlet",
+    "Celio",
+    "Feel 22 Website",
+    "J-Tech",
+    "Trayumf Jbeil",
+    "Online Shop",
+    "Maison Brown",
+    "Parking"
+  ],
+  "Pull & Bear": [
+    "Jack & Jones",
+    "Mike Sport Outlet",
+    "Celio",
+    "Feel 22 Website",
+    "J-Tech",
+    "Trayumf Jbeil",
+    "Online Shop",
+    "Maison Brown",
+    "Parking",
+    "GS Stores"
+  ],
+  "Jack & Jones": [
+    "Mike Sport Outlet",
+    "Celio",
+    "Feel 22 Website",
+    "J-Tech",
+    "Trayumf Jbeil",
+    "Online Shop",
+    "Maison Brown",
+    "Parking",
+    "GS Stores"
+  ],
+  "Mike Sport Outlet": [
+    "Celio",
+    "Feel 22 Website",
+    "J-Tech",
+    "Trayumf Jbeil",
+    "Online Shop",
+    "Maison Brown",
+    "Parking",
+    "GS Stores"
+  ],
+  "Celio": [
+    "Feel 22 Website",
+    "J-Tech",
+    "Trayumf Jbeil",
+    "Online Shop",
+    "Maison Brown",
+    "Parking",
+    "GS Stores"
+  ],
+  "Feel 22 Website": [
+    "J-Tech",
+    "Trayumf Jbeil",
+    "Online Shop",
+    "Maison Brown",
+    "Parking",
+    "GS Stores"
+  ],
+  "J-Tech": [
+    "Trayumf Jbeil",
+    "Online Shop",
+    "Maison Brown",
+    "Parking",
+    "GS Stores"
+  ],
+  "Trayumf Jbeil": [
+    "Online Shop",
+    "Maison Brown",
+    "Parking",
+    "GS Stores"
+  ],
+  "Online Shop": [
+    "Maison Brown",
+    "Parking",
+    "GS Stores"
+  ],
+  "Maison Brown": [
+    "Parking",
+    "GS Stores"
+  ],
+  "Parking": [
+    "Lunch"
+  ],
+  "Personal Care": [
+    "Skin Care",
+    "HairCut (BoB Shallouf)",
+    "Laser Hair Removal (Full CHEST, Full BACK)",
+    "Shower Products"
+  ],
+  "Skin Care": [
+    "HairCut (BoB Shallouf)",
+    "Laser Hair Removal (Full CHEST, Full BACK)",
+    "Shower Products"
+  ],
+  "HairCut (BoB Shallouf)": [
+    "Laser Hair Removal (Full CHEST, Full BACK)",
+    "Shower Products"
+  ],
+  "Laser Hair Removal (Full CHEST, Full BACK)": [
+    "Shower Products"
+  ],
+  "Self-Improvement": [
+    "Books"
+  ],
+  "Car Maintenance (Mazda)": [
+    "Brake Oil",
+    "Engine Oil",
+    "Front Brake Plates",
+    "Front Brake Disc"
+  ],
+  "Brake Oil": [
+    "Engine Oil",
+    "Front Brake Plates",
+    "Front Brake Disc"
+  ],
+  "Engine Oil": [
+    "Front Brake Plates",
+    "Front Brake Disc"
+  ],
+  "Front Brake Plates": [
+    "Front Brake Disc"
+  ],
+  "Electronics": [
+    "Ayoub Computers",
+    "PC & PARTS",
+    "GCS Computers",
+    "Mr Phone",
+    "ACE Computers",
+    "PRIVATE TECH"
+  ],
+  "Ayoub Computers": [
+    "PC & PARTS",
+    "GCS Computers",
+    "Mr Phone",
+    "ACE Computers",
+    "PRIVATE TECH"
+  ],
+  "PC & PARTS": [
+    "GCS Computers",
+    "Mr Phone",
+    "ACE Computers",
+    "PRIVATE TECH"
+  ],
+  "GCS Computers": [
+    "Mr Phone",
+    "ACE Computers",
+    "PRIVATE TECH"
+  ],
+  "Mr Phone": [
+    "ACE Computers",
+    "PRIVATE TECH"
+  ],
+  "ACE Computers": [
+    "PRIVATE TECH"
+  ],
+  "SKI": [
+    "Slopes Pass",
+    "Outfit Rent",
+    "Equipements Rent",
+    "Parking",
+    "Lunch"
+  ],
+  "Slopes Pass": [
+    "Outfit Rent",
+    "Equipements Rent",
+    "Parking",
+    "Lunch"
+  ],
+  "Outfit Rent": [
+    "Equipements Rent",
+    "Parking",
+    "Lunch"
+  ],
+  "Equipements Rent": [
+    "Parking",
+    "Lunch"
+  ],
+  "Car Maintenance (Opel)": [
+    "Brake Oil",
+    "Engine Oil",
+    "Front Brake Plates",
+    "Front Brake Disc"
+  ],
+  "Home Items": [
+    "Breaker MonoPhase"
+  ],
+  "Insurance": [
+    "Car Insurance (Opel)",
+    "Car Insurance (Mazda)"
+  ],
+  "Car Insurance (Opel)": [
+    "Car Insurance (Mazda)"
+  ],
+  "Education": [
+    "University Fees"
+  ],
+  "WoodWork_Workshop": [
+    "Machine Maintenance"
+  ],
+  "GYM_Membership": [
+    "360 Fit Batroun (Full Month)",
+    "360 Fit Batroun (1/2 Month)",
+    "Orange Bleu Palaiseau (Full Month)",
+    "Orange Bleu Palaiseau (1/2 Month)",
+    "Basic-Fit (Full Month)",
+    "Basic-Fit (1/2 Month)",
+    "Fitness Park (Full Month)",
+    "Fitness Park (1/2 Month)"
+  ],
+  "360 Fit Batroun (Full Month)": [
+    "360 Fit Batroun (1/2 Month)",
+    "Orange Bleu Palaiseau (Full Month)",
+    "Orange Bleu Palaiseau (1/2 Month)",
+    "Basic-Fit (Full Month)",
+    "Basic-Fit (1/2 Month)",
+    "Fitness Park (Full Month)",
+    "Fitness Park (1/2 Month)"
+  ],
+  "360 Fit Batroun (1/2 Month)": [
+    "Orange Bleu Palaiseau (Full Month)",
+    "Orange Bleu Palaiseau (1/2 Month)",
+    "Basic-Fit (Full Month)",
+    "Basic-Fit (1/2 Month)",
+    "Fitness Park (Full Month)",
+    "Fitness Park (1/2 Month)"
+  ],
+  "Orange Bleu Palaiseau (Full Month)": [
+    "Orange Bleu Palaiseau (1/2 Month)",
+    "Basic-Fit (Full Month)",
+    "Basic-Fit (1/2 Month)",
+    "Fitness Park (Full Month)",
+    "Fitness Park (1/2 Month)"
+  ],
+  "Orange Bleu Palaiseau (1/2 Month)": [
+    "Basic-Fit (Full Month)",
+    "Basic-Fit (1/2 Month)",
+    "Fitness Park (Full Month)",
+    "Fitness Park (1/2 Month)"
+  ],
+  "Basic-Fit (Full Month)": [
+    "Basic-Fit (1/2 Month)",
+    "Fitness Park (Full Month)",
+    "Fitness Park (1/2 Month)"
+  ],
+  "Basic-Fit (1/2 Month)": [
+    "Fitness Park (Full Month)",
+    "Fitness Park (1/2 Month)"
+  ],
+  "Fitness Park (Full Month)": [
+    "Fitness Park (1/2 Month)"
+  ],
+  "Health": [
+    "Blood Test",
+    "Body Composition",
+    "Dental (Othosmiles)",
+    "Dental (Jean Bez)",
+    "Eye Doctor Visit (Daniel Cherfan)",
+    "Medicines (Serge Pharmacy)",
+    "Medicines (Dagher Pharmacy)",
+    "Medicines (Rahbani Pharmacy)",
+    "Medicines (Tatiana Pharmacy)",
+    "Medicines (Jeddayel Pharmacy)"
+  ],
+  "Blood Test": [
+    "Body Composition",
+    "Dental (Othosmiles)",
+    "Dental (Jean Bez)",
+    "Eye Doctor Visit (Daniel Cherfan)",
+    "Medicines (Serge Pharmacy)",
+    "Medicines (Dagher Pharmacy)",
+    "Medicines (Rahbani Pharmacy)",
+    "Medicines (Tatiana Pharmacy)",
+    "Medicines (Jeddayel Pharmacy)"
+  ],
+  "Body Composition": [
+    "Dental (Othosmiles)",
+    "Dental (Jean Bez)",
+    "Eye Doctor Visit (Daniel Cherfan)",
+    "Medicines (Serge Pharmacy)",
+    "Medicines (Dagher Pharmacy)",
+    "Medicines (Rahbani Pharmacy)",
+    "Medicines (Tatiana Pharmacy)",
+    "Medicines (Jeddayel Pharmacy)"
+  ],
+  "Dental (Othosmiles)": [
+    "Dental (Jean Bez)",
+    "Eye Doctor Visit (Daniel Cherfan)",
+    "Medicines (Serge Pharmacy)",
+    "Medicines (Dagher Pharmacy)",
+    "Medicines (Rahbani Pharmacy)",
+    "Medicines (Tatiana Pharmacy)",
+    "Medicines (Jeddayel Pharmacy)"
+  ],
+  "Dental (Jean Bez)": [
+    "Eye Doctor Visit (Daniel Cherfan)",
+    "Medicines (Serge Pharmacy)",
+    "Medicines (Dagher Pharmacy)",
+    "Medicines (Rahbani Pharmacy)",
+    "Medicines (Tatiana Pharmacy)",
+    "Medicines (Jeddayel Pharmacy)"
+  ],
+  "Eye Doctor Visit (Daniel Cherfan)": [
+    "Medicines (Serge Pharmacy)",
+    "Medicines (Dagher Pharmacy)",
+    "Medicines (Rahbani Pharmacy)",
+    "Medicines (Tatiana Pharmacy)",
+    "Medicines (Jeddayel Pharmacy)"
+  ],
+  "Medicines (Serge Pharmacy)": [
+    "Medicines (Dagher Pharmacy)",
+    "Medicines (Rahbani Pharmacy)",
+    "Medicines (Tatiana Pharmacy)",
+    "Medicines (Jeddayel Pharmacy)"
+  ],
+  "Medicines (Dagher Pharmacy)": [
+    "Medicines (Rahbani Pharmacy)",
+    "Medicines (Tatiana Pharmacy)",
+    "Medicines (Jeddayel Pharmacy)"
+  ],
+  "Medicines (Rahbani Pharmacy)": [
+    "Medicines (Tatiana Pharmacy)",
+    "Medicines (Jeddayel Pharmacy)"
+  ],
+  "Medicines (Tatiana Pharmacy)": [
+    "Medicines (Jeddayel Pharmacy)"
+  ],
+  "Tosrif": [
+    "$ TO LBP",
+    "LBP TO $",
+    "$ TO €",
+    "€ TO $"
+  ],
+  "$ TO LBP": [
+    "LBP TO $",
+    "$ TO €",
+    "€ TO $"
+  ],
+  "LBP TO $": [
+    "$ TO €",
+    "€ TO $"
+  ],
+  "$ TO €": [
+    "€ TO $"
+  ]
+}
