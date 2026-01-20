@@ -1,8 +1,9 @@
-""""
+"""
 BUDGET TRACKER BOT - LINUX VERSION WITH ONEDRIVE API
 Optimized for Ubuntu 22.04 aarch64 on Oracle Cloud
-""""
-
+"""
+import zipfile
+import xml.etree.ElementTree as ET
 import functools
 import os
 import re
@@ -26,8 +27,8 @@ from concurrent.futures import ThreadPoolExecutor, Future
 try:
     import pandas as pd
     from openpyxl import load_workbook, Workbook
-    from openpyxl.utils import range_boundaries, get_column_letter
-    from openpyxl.utils.cell import coordinate_from_string, column_index_from_string
+    from openpyxl.utils import range_boundaries, get_column_letter, column_index_from_string
+    from openpyxl.utils.cell import coordinate_from_string,
     # Check if openpyxl supports keep_vba
     import openpyxl
     OPENPYXL_VERSION = tuple(map(int, openpyxl.__version__.split('.')))
@@ -142,6 +143,11 @@ except ImportError:
     ONEDRIVE_AVAILABLE = False
     print("⚠️  Microsoft Graph libraries not found. Install: pip install msal requests msgraph-core")
 
+try:
+    import requests
+except ImportError:
+    requests = None
+    logger.warning("requests library not available. OneDrive upload functions will fail. Install: pip install requests")
 # ========== ONEDRIVE CONFIGURATION (single consolidated block) ==========
 ONEDRIVE_CLIENT_ID = os.getenv("ONEDRIVE_CLIENT_ID", "")
 ONEDRIVE_CLIENT_SECRET = os.getenv("ONEDRIVE_CLIENT_SECRET", "")
@@ -1211,6 +1217,7 @@ def load_all_tables_with_details() -> Dict[str, Dict]:
         logger.error(f"Error loading tables: {str(e)}", exc_info=True)
         return {}
 
+
 def add_transaction_smart(
     subcategory_input: str,
     currency_amounts: Dict[str, Optional[float]],
@@ -1295,6 +1302,7 @@ def add_transaction_smart(
         with excel_lock:
             wb = load_workbook(str(LOCAL_COPY_PATH), keep_vba=True)
             sheet = wb[TRACKING_SHEET_NAME]
+            sheet_id = getattr(sheet, "sheet_id", None) or getattr(sheet, "_id", None)
 
             # Build the values we want to write (use a date object for the date - no time)
             now_date = datetime.now().date()
@@ -1324,7 +1332,6 @@ def add_transaction_smart(
             table_row_written = 0
             try:
                 for tbl in sheet.tables.values():
-                    # Inspect the table header row to check if it contains "Date" / "Payment"
                     try:
                         min_col, min_row, max_col, max_row = range_boundaries(tbl.ref)
                     except Exception:
@@ -1332,10 +1339,8 @@ def add_transaction_smart(
 
                     # IMPORTANT: do not touch anything above row 11 (preserve header/blocks)
                     if min_row < 11:
-                        # table starts above row 11 — skip it (we don't want to modify rows 1..11)
                         continue
-                    
-                    # safe header_values extraction to avoid .strip() on non-string cell values
+
                     header_vals = []
                     for c in range(min_col, max_col + 1):
                         raw = sheet.cell(row=min_row, column=c).value
@@ -1343,17 +1348,16 @@ def add_transaction_smart(
                             header_vals.append("")
                         else:
                             header_vals.append(str(raw).strip().lower())
-                    
-                    # simple heuristic: table that contains a "date" header and either "payment" or "category"
-                    if any('date' in str(h) for h in header_vals) and (any('payment' in str(h) for h in header_vals) or any('category' in str(h) for h in header_vals)):
-                        # append into this table
+
+                    if any('date' in str(h) for h in header_vals) and (
+                        any('payment' in str(h) for h in header_vals) or any('category' in str(h) for h in header_vals)
+                    ):
                         table_row_written = _append_row_to_table(sheet, tbl, row_values)
                         break
             except Exception as e:
                 logger.debug(f"Table detection failed: {e}")
 
             if table_row_written == 0:
-                # Fallback to original behavior (write below the last used row, starting at row 12)
                 row = 12
                 while sheet[f'C{row}'].value not in [None, ""]:
                     row += 1
@@ -1362,7 +1366,6 @@ def add_transaction_smart(
 
                 logger.debug(f"Adding transaction at fallback row {row}")
 
-                # write a date-only value (no time) and set US short date format
                 sheet[f'C{row}'].value = now_date
                 sheet[f'C{row}'].number_format = 'm/d/yyyy'
 
@@ -1384,10 +1387,37 @@ def add_transaction_smart(
                 else:
                     sheet[f'K{row}'].value = None
 
-            # Save and close
-            wb.save(str(LOCAL_COPY_PATH))
-            wb.close()
-            logger.debug("Transaction saved to local file")
+            # Save and close (preserve drawings/textboxes)
+            temp_path = None
+            backup_path = LOCAL_COPY_PATH.with_suffix('.backup.xlsm')
+            try:
+                if LOCAL_COPY_PATH.exists():
+                    shutil.copy2(LOCAL_COPY_PATH, backup_path)
+
+                tf = tempfile.NamedTemporaryFile(
+                    prefix=f".{LOCAL_COPY_PATH.name}.tmp-",
+                    dir=str(LOCAL_COPY_PATH.parent),
+                    delete=False
+                )
+                temp_path = Path(tf.name)
+                tf.close()
+
+                wb.save(str(temp_path))
+                wb.close()
+
+                if backup_path.exists() and sheet_id:
+                    _preserve_sheet_drawings(backup_path, temp_path, sheet_id)
+
+                os.replace(str(temp_path), str(LOCAL_COPY_PATH))
+                logger.debug("Transaction saved to local file (drawings preserved)")
+            except Exception as e:
+                logger.error("Failed to save workbook with drawings preserved", exc_info=True)
+                if temp_path and temp_path.exists():
+                    try:
+                        temp_path.unlink()
+                    except Exception:
+                        pass
+                return False, "❌ Failed to save Excel file safely"
 
         # 4) Save back to OneDrive
         save_success, save_msg = save_excel_to_onedrive()
@@ -2603,6 +2633,57 @@ def fix_excel_file_format(input_path: Path, output_path: Path) -> bool:
         logger.error(f"Error fixing Excel format: {e}")
         return False
 
+def _preserve_sheet_drawings(original_path: Path, updated_path: Path, sheet_id: int) -> None:
+    """
+    Restore drawings/textboxes for a worksheet after openpyxl saves.
+    This keeps shapes in rows 1–10 intact.
+    """
+    import zipfile
+    import xml.etree.ElementTree as ET
+
+    if not original_path.exists() or not updated_path.exists():
+        return
+
+    sheet_xml = f"xl/worksheets/sheet{sheet_id}.xml"
+    sheet_rels = f"xl/worksheets/_rels/sheet{sheet_id}.xml.rels"
+
+    def _local_name(tag: str) -> str:
+        return tag.rsplit("}", 1)[-1] if "}" in tag else tag
+
+    with zipfile.ZipFile(original_path, "r") as orig, zipfile.ZipFile(updated_path, "a") as updated:
+        # Keep content types (ensures drawing content types exist)
+        if "[Content_Types].xml" in orig.namelist():
+            updated.writestr("[Content_Types].xml", orig.read("[Content_Types].xml"))
+
+        # Copy drawings and media
+        for name in orig.namelist():
+            if name.startswith(("xl/drawings/", "xl/drawings/_rels/", "xl/media/")):
+                updated.writestr(name, orig.read(name))
+
+        # Copy sheet relationships (drawing references)
+        if sheet_rels in orig.namelist():
+            updated.writestr(sheet_rels, orig.read(sheet_rels))
+
+        # Re-inject <drawing> or <legacyDrawing> elements into sheet XML
+        if sheet_xml in orig.namelist() and sheet_xml in updated.namelist():
+            orig_root = ET.fromstring(orig.read(sheet_xml))
+            updated_root = ET.fromstring(updated.read(sheet_xml))
+
+            def _has_tag(root, tagname):
+                return any(_local_name(el.tag) == tagname for el in root)
+
+            orig_drawings = [el for el in orig_root if _local_name(el.tag) in ("drawing", "legacyDrawing")]
+            if orig_drawings:
+                for tagname in ("drawing", "legacyDrawing"):
+                    if _has_tag(orig_root, tagname) and not _has_tag(updated_root, tagname):
+                        for el in orig_drawings:
+                            if _local_name(el.tag) == tagname:
+                                updated_root.append(el)
+
+                updated_xml = ET.tostring(updated_root, encoding="utf-8", xml_declaration=True)
+                updated.writestr(sheet_xml, updated_xml)
+
+
 def save_excel_safely(filepath: Path, sheet_name: str, row: int, values: dict) -> bool:
     """
     Save to Excel safely without corrupting .xlsm format.
@@ -2611,6 +2692,7 @@ def save_excel_safely(filepath: Path, sheet_name: str, row: int, values: dict) -
     - Writes workbook to a NamedTemporaryFile in the same directory and fsyncs it.
     - Uses os.replace for atomic rename.
     - Preserves original file permissions (mode) and attempts to preserve ownership.
+    - Preserves drawings/textboxes by restoring drawing parts from backup.
     - Uses numeric coordinate handling for data validation removal (existing logic preserved).
     """
     import tempfile
@@ -2649,6 +2731,7 @@ def save_excel_safely(filepath: Path, sheet_name: str, row: int, values: dict) -
         # Load workbook and apply changes (keep_vba to preserve macros)
         wb = load_workbook(str(filepath), keep_vba=True)
         ws = wb[sheet_name]
+        sheet_id = getattr(ws, "sheet_id", None) or getattr(ws, "_id", None)
 
         # Helper: parse a single cell coordinate "C12" -> (col_index:int, row:int)
         def _coord_to_col_row(coord: str):
@@ -2756,7 +2839,6 @@ def save_excel_safely(filepath: Path, sheet_name: str, row: int, values: dict) -
             wb.close()
         except Exception as e:
             logger.error("Failed to save workbook to temp file", exc_info=True)
-            # cleanup temp, restore and return failure
             try:
                 if temp_path.exists():
                     temp_path.unlink()
@@ -2764,20 +2846,25 @@ def save_excel_safely(filepath: Path, sheet_name: str, row: int, values: dict) -
                 pass
             return False
 
+        # Restore drawings/textboxes
+        if backup_path.exists() and sheet_id:
+            try:
+                _preserve_sheet_drawings(backup_path, temp_path, sheet_id)
+            except Exception:
+                logger.debug("Drawing restore failed (non-fatal)", exc_info=True)
+
         # fsync the temporary file to ensure durability
         try:
             with open(str(temp_path), 'rb') as fh:
                 fh.flush()
                 os.fsync(fh.fileno())
         except Exception:
-            # not fatal — best effort
             logger.debug("fsync of temp file failed or not supported")
 
         # Verify size (sanity check)
         try:
             if temp_path.stat().st_size <= 1000:
                 logger.error("Temporary saved file too small, aborting safe replace")
-                # restore from backup if possible
                 if backup_path.exists():
                     try:
                         shutil.copy2(backup_path, filepath)
@@ -2799,25 +2886,21 @@ def save_excel_safely(filepath: Path, sheet_name: str, row: int, values: dict) -
                     os.chmod(str(filepath), orig_mode)
                 except Exception:
                     logger.debug("Failed to restore file mode")
-            # Try to preserve ownership (best-effort)
             try:
                 if orig_uid is not None and orig_gid is not None:
                     os.chown(str(filepath), orig_uid, orig_gid)
             except PermissionError:
-                # we may not have privileges to chown; ignore
                 logger.debug("Insufficient permissions to chown file; skipping")
             except Exception:
                 logger.debug("Failed to chown file (non-fatal)")
         except Exception as e:
             logger.error(f"Atomic replace failed: {e}", exc_info=True)
-            # attempt fallback: copy2 and cleanup
             try:
                 shutil.copy2(str(temp_path), str(filepath))
                 if temp_path.exists():
                     temp_path.unlink()
             except Exception as e2:
                 logger.error(f"Fallback copy failed: {e2}", exc_info=True)
-                # try to restore original from backup
                 try:
                     if backup_path.exists():
                         shutil.copy2(backup_path, filepath)
@@ -2830,7 +2913,6 @@ def save_excel_safely(filepath: Path, sheet_name: str, row: int, values: dict) -
 
     except Exception as e:
         logger.error(f"Error in save_excel_safely: {e}", exc_info=True)
-        # Best-effort restore original
         try:
             backup_path = filepath.with_suffix('.backup.xlsm')
             if backup_path.exists():
