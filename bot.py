@@ -150,7 +150,18 @@ ONEDRIVE_TENANT_ID = os.getenv("ONEDRIVE_TENANT_ID", "common")
 ONEDRIVE_REDIRECT_URI = os.getenv("ONEDRIVE_REDIRECT_URI", "http://localhost:8080/")
 ONEDRIVE_FILE_PATH = os.getenv("ONEDRIVE_FILE_PATH", "/budget_tracker.xlsm")
 ONEDRIVE_TOKEN_PATH = Path(os.getenv("ONEDRIVE_TOKEN_PATH", "/home/ubuntu/budget_tracker/onedrive_tokens.json"))
-ONEDRIVE_SCOPES = ["https://graph.microsoft.com/Files.ReadWrite"]
+
+# Scopes (from .env). Example: ONEDRIVE_SCOPES=Files.ReadWrite,offline_access
+_scopes_raw = os.getenv("ONEDRIVE_SCOPES", "Files.ReadWrite,offline_access")
+ONEDRIVE_SCOPES = [s.strip() for s in _scopes_raw.split(",") if s.strip()]
+
+# MSAL requires scopes as a plain list[str] (not set/frozenset)
+if not isinstance(ONEDRIVE_SCOPES, list):
+    ONEDRIVE_SCOPES = list(ONEDRIVE_SCOPES)
+
+logger.info(f"OneDrive scopes loaded: {ONEDRIVE_SCOPES} (type={type(ONEDRIVE_SCOPES)})")
+
+TRACKING_TABLE_NAME = os.getenv("TRACKING_TABLE_NAME", "Tracking")
 
 # OneDrive client instance
 _onedrive_app = None
@@ -202,7 +213,7 @@ def get_onedrive_token():
             try:
                 result = app.acquire_token_by_authorization_code(
                     code=auth_code,
-                    scopes=ONEDRIVE_SCOPES,
+                    scopes=list(ONEDRIVE_SCOPES),
                     redirect_uri=ONEDRIVE_REDIRECT_URI
                 )
             except Exception as ex:
@@ -232,11 +243,11 @@ def get_onedrive_token():
                 if hasattr(app, 'acquire_token_by_refresh_token'):
                     result = app.acquire_token_by_refresh_token(
                         refresh_token=token_data['refresh_token'],
-                        scopes=ONEDRIVE_SCOPES
+                        scopes=list(ONEDRIVE_SCOPES)
                     )
                 else:
                     # Try client credential flow (app-only) as fallback
-                    result = app.acquire_token_for_client(scopes=ONEDRIVE_SCOPES)
+                    result = app.acquire_token_for_client(scopes=list(ONEDRIVE_SCOPES))
             except Exception as ex:
                 logger.warning(f"Refresh token flow failed: {ex}")
                 result = {}
@@ -252,6 +263,104 @@ def get_onedrive_token():
     except Exception as e:
         logger.error(f"Error getting token: {e}")
         return None
+
+def _graph_request(
+    method: str,
+    url: str,
+    token: str,
+    *,
+    json_body: Optional[dict] = None,
+    timeout: int = 30
+) -> Tuple[bool, str, Optional[dict]]:
+    """Small helper for Microsoft Graph requests with consistent error handling."""
+    try:
+        headers = {"Authorization": f"Bearer {token}"}
+        if json_body is not None:
+            headers["Content-Type"] = "application/json"
+
+        resp = requests.request(method, url, headers=headers, json=json_body, timeout=timeout)
+
+        if resp.status_code in (200, 201, 202, 204):
+            if resp.text and resp.text.strip():
+                try:
+                    return True, "OK", resp.json()
+                except Exception:
+                    return True, "OK", None
+            return True, "OK", None
+
+        # Error path
+        try:
+            err = resp.json()
+            msg = err.get("error", {}).get("message", resp.text)
+        except Exception:
+            msg = resp.text
+
+        return False, f"{resp.status_code}: {msg}", None
+
+    except Exception as e:
+        return False, str(e), None
+
+
+def append_transaction_to_tracking_table(
+    *,
+    date_value,
+    payment: str,
+    tx_type: str,
+    category: str,
+    subcategory: str,
+    usd: Optional[float],
+    lbp: Optional[float],
+    euro: Optional[float],
+    details: Optional[str],
+) -> Tuple[bool, str]:
+    """
+    Append a transaction row to the Excel Table 'Tracking' using Microsoft Graph workbook API.
+    This preserves shapes/text boxes and triggers Excel Online recalculation.
+    """
+    token = get_onedrive_token()
+    if not token:
+        return False, "❌ Not authenticated with OneDrive. Use /onedrive_auth first."
+
+    # URL-encode spaces for Graph path usage
+    file_path = ONEDRIVE_FILE_PATH.replace(" ", "%20")
+
+    # Append row endpoint (table name in TRACKING_TABLE_NAME)
+    url = f"https://graph.microsoft.com/v1.0/me/drive/root:{file_path}:/workbook/tables/{TRACKING_TABLE_NAME}/rows/add"
+
+    # Dates: safest to send ISO string
+    try:
+        date_str = date_value.isoformat()
+    except Exception:
+        date_str = str(date_value)
+
+    # Your table columns order (13 columns total):
+    # Date | Payment | Type | Category | Subcategory | Amount $ | Amount LBP | Amount € | Details |
+    # Balance $ | Balance LBP | Balance € | Effective Date
+    #
+    # Formula-driven columns -> send null so Excel calculates them.
+    row = [
+        date_str,
+        payment,
+        tx_type,
+        category,
+        subcategory,
+        usd,
+        lbp,
+        euro,
+        details or None,
+        None,  # Balance $ (formula)
+        None,  # Balance LBP (formula)
+        None,  # Balance € (formula)
+        None,  # Effective Date (formula)
+    ]
+
+    body = {"values": [row]}
+
+    ok, msg, _ = _graph_request("POST", url, token, json_body=body, timeout=60)
+    if ok:
+        return True, "✅ Transaction appended to Excel table (Graph)."
+
+    return False, f"❌ Graph append failed: {msg}"
 
 def download_from_onedrive() -> Tuple[bool, str]:
     """Download Excel file from OneDrive using Microsoft Graph API"""
@@ -296,6 +405,8 @@ def download_from_onedrive() -> Tuple[bool, str]:
     except Exception as e:
         logger.error(f"Error downloading from OneDrive: {str(e)}")
         return False, f"❌ Download error: {str(e)[:200]}"
+
+
 
 def copy_excel_from_onedrive() -> Tuple[bool, str]:
     """Download fresh copy from OneDrive before operations"""
@@ -426,11 +537,15 @@ async def onedrive_auth_command(update, context):
             await update.message.reply_text("❌ MSAL app not configured. Check ONEDRIVE_CLIENT_ID in .env")
             return
 
-        # Generate auth URL
+        logger.info(f"DEBUG scopes used for auth: {ONEDRIVE_SCOPES} type={type(ONEDRIVE_SCOPES)}")
+        logger.info(f"DEBUG redirect used for auth: {ONEDRIVE_REDIRECT_URI}")
+
         auth_url = app.get_authorization_request_url(
-            scopes=ONEDRIVE_SCOPES,
+            scopes=list(ONEDRIVE_SCOPES),
             redirect_uri=ONEDRIVE_REDIRECT_URI
         )
+
+        logger.info(f"DEBUG auth_url generated: {auth_url}")
 
         message = (
             "🔐 <b>OneDrive Authentication Required</b>\n\n"
@@ -446,7 +561,7 @@ async def onedrive_auth_command(update, context):
             "7. <b>Then run:</b> <code>/onedrive_test</code>"
         )
 
-        await update.message.reply_text(message, parse_mode='HTML')
+        await update.message.reply_text(message, parse_mode="HTML")
 
     except Exception as e:
         logger.error(f"Error generating auth URL: {e}")
@@ -478,7 +593,7 @@ async def onedrive_complete_auth_command(update, context):
         # Exchange code for tokens
         result = app.acquire_token_by_authorization_code(
             code=auth_code,
-            scopes=ONEDRIVE_SCOPES,
+            scopes=list(ONEDRIVE_SCOPES),
             redirect_uri=ONEDRIVE_REDIRECT_URI
         )
 
@@ -502,6 +617,66 @@ async def onedrive_complete_auth_command(update, context):
     except Exception as e:
         logger.error(f"Error completing auth: {e}")
         await update.message.reply_text(f"❌ Error: {str(e)[:200]}")
+
+async def onedrive_complete_auth_from_url_command(update, context):
+    """Complete OneDrive auth by pasting the FULL redirect URL (safer than pasting code)."""
+    if not is_authorized(update.effective_user.id):
+        await update.message.reply_text("⛔ Unauthorized.")
+        return
+
+    if not context.args:
+        await update.message.reply_text(
+            "Usage: /onedrive_code_url <full_redirect_url>\n\n"
+            "Example:\n"
+            "/onedrive_code_url http://localhost:8080/?code=...&session_state=..."
+        )
+        return
+
+    full_url = " ".join(context.args).strip()
+
+    try:
+        from urllib.parse import urlparse, parse_qs
+
+        parsed = urlparse(full_url)
+        qs = parse_qs(parsed.query)
+        code = qs.get("code", [None])[0]
+
+        if not code:
+            await update.message.reply_text("❌ Could not find `code=` in the URL you pasted.")
+            return
+
+        await update.message.reply_text("🔐 Completing authentication...")
+
+        app = get_onedrive_app()
+        if app is None:
+            await update.message.reply_text("❌ MSAL app not configured")
+            return
+
+        result = app.acquire_token_by_authorization_code(
+            code=code,
+            scopes=list(ONEDRIVE_SCOPES),
+            redirect_uri=ONEDRIVE_REDIRECT_URI
+        )
+
+        if "access_token" in result:
+            with open(ONEDRIVE_TOKEN_PATH, "w") as f:
+                json.dump(result, f)
+
+            await update.message.reply_text(
+                "✅ <b>Authentication Successful!</b>\n\n"
+                "You can now use OneDrive features:\n"
+                "• /onedrive_test - Test connection\n"
+                "• Normal transactions will write via Graph",
+                parse_mode="HTML"
+            )
+        else:
+            error_msg = result.get("error_description", str(result))
+            await update.message.reply_text(f"❌ Authentication failed: {error_msg}")
+
+    except Exception as e:
+        logger.error(f"Error completing auth from URL: {e}", exc_info=True)
+        await update.message.reply_text(f"❌ Error: {str(e)[:200]}")
+
 
 async def onedrive_test_command(update, context):
     """Test OneDrive connection (non-blocking)"""
@@ -584,7 +759,7 @@ async def complete_onedrive_auth(update, auth_code):
 
         result = app.acquire_token_by_authorization_code(
             code=auth_code,
-            scopes=ONEDRIVE_SCOPES,
+            scopes=list(ONEDRIVE_SCOPES),
             redirect_uri=ONEDRIVE_REDIRECT_URI
         )
 
@@ -1289,110 +1464,39 @@ def add_transaction_smart(
             f"({match_type}, {confidence_percentage:.1f}%)"
         )
 
-        # 3) Open Excel and add transaction
-        if not EXCEL_AVAILABLE:
-            return False, "❌ openpyxl not installed. Please install with: pip install openpyxl pandas"
+        # 3) Append transaction via Microsoft Graph to Excel Table (preserves shapes + recalculates formulas)
+        now_date = datetime.now().date()
 
-        with excel_lock:
-            wb = load_workbook(str(LOCAL_COPY_PATH), keep_vba=True)
-            sheet = wb[TRACKING_SHEET_NAME]
+        usd = float(currency_amounts.get("USD")) if currency_amounts.get("USD") is not None else None
+        lbp = float(currency_amounts.get("LBP")) if currency_amounts.get("LBP") is not None else None
+        eur = float(currency_amounts.get("EURO")) if currency_amounts.get("EURO") is not None else None
 
-            # Build the values we want to write (use a date object for the date - no time)
-            now_date = datetime.now().date()
-            row_values = {
-                'date': now_date,
-                'payment': payment_type,
-                'type': transaction_type,
-                'category': category,
-                'subcategory': matched_original,
-                'USD': None,
-                'LBP': None,
-                'EURO': None,
-                'details': None
-            }
+        # Prepare details/notes safely (limit length like before)
+        details = None
+        if optional_notes:
+            details = optional_notes.strip()
+            if len(details) > 500:
+                details = details[:497] + "..."
 
-            for currency, amount in currency_amounts.items():
-                if currency in CURRENCIES and amount is not None:
-                    row_values[currency] = float(amount)
+        graph_ok, graph_msg = append_transaction_to_tracking_table(
+            date_value=now_date,
+            payment=payment_type,
+            tx_type=transaction_type,
+            category=category,
+            subcategory=matched_original,
+            usd=usd,
+            lbp=lbp,
+            euro=eur,
+            details=details,
+        )
 
-            if optional_notes:
-                clean_notes = optional_notes.strip()
-                if len(clean_notes) > 500:
-                    clean_notes = clean_notes[:497] + "..."
-                row_values['details'] = clean_notes
+        if not graph_ok:
+            logger.error(f"Graph append failed: {graph_msg}")
+            return False, graph_msg
 
-            # Try to find a table on the sheet that looks like the tracking table:
-            table_row_written = 0
-            try:
-                for tbl in sheet.tables.values():
-                    # Inspect the table header row to check if it contains "Date" / "Payment"
-                    try:
-                        min_col, min_row, max_col, max_row = range_boundaries(tbl.ref)
-                    except Exception:
-                        continue
-
-                    # IMPORTANT: do not touch anything above row 11 (preserve header/blocks)
-                    if min_row < 11:
-                        # table starts above row 11 — skip it (we don't want to modify rows 1..11)
-                        continue
-                    
-                    # safe header_values extraction to avoid .strip() on non-string cell values
-                    header_vals = []
-                    for c in range(min_col, max_col + 1):
-                        raw = sheet.cell(row=min_row, column=c).value
-                        if raw is None:
-                            header_vals.append("")
-                        else:
-                            header_vals.append(str(raw).strip().lower())
-                    
-                    # simple heuristic: table that contains a "date" header and either "payment" or "category"
-                    if any('date' in str(h) for h in header_vals) and (any('payment' in str(h) for h in header_vals) or any('category' in str(h) for h in header_vals)):
-                        # append into this table
-                        table_row_written = _append_row_to_table(sheet, tbl, row_values)
-                        break
-            except Exception as e:
-                logger.debug(f"Table detection failed: {e}")
-
-            if table_row_written == 0:
-                # Fallback to original behavior (write below the last used row, starting at row 12)
-                row = 12
-                while sheet[f'C{row}'].value not in [None, ""]:
-                    row += 1
-                    if row > 10000:
-                        break
-
-                logger.debug(f"Adding transaction at fallback row {row}")
-
-                # write a date-only value (no time) and set US short date format
-                sheet[f'C{row}'].value = now_date
-                sheet[f'C{row}'].number_format = 'm/d/yyyy'
-
-                sheet[f'D{row}'].value = payment_type
-                sheet[f'E{row}'].value = transaction_type
-                sheet[f'F{row}'].value = category
-                sheet[f'G{row}'].value = matched_original
-
-                for currency, amount in currency_amounts.items():
-                    if currency in CURRENCIES and amount is not None:
-                        column = CURRENCIES[currency].column
-                        sheet[f'{column}{row}'].value = float(amount)
-
-                if not currency_amounts:
-                    sheet[f'H{row}'].value = 0.0
-
-                if optional_notes:
-                    sheet[f'K{row}'].value = row_values['details']
-                else:
-                    sheet[f'K{row}'].value = None
-
-            # Save and close
-            wb.save(str(LOCAL_COPY_PATH))
-            wb.close()
-            logger.debug("Transaction saved to local file")
-
-        # 4) Save back to OneDrive
-        save_success, save_msg = save_excel_to_onedrive()
-
+        # Graph succeeded; Excel Online will recalc formulas automatically
+        save_success, save_msg = True, graph_msg
+        
         # Build response
         amount_display_parts = []
         total_amounts = len(currency_amounts)
@@ -4694,8 +4798,9 @@ def main():
     app.add_handler(CommandHandler("download", download_command))
     app.add_handler(CommandHandler("unlock", unlock_command))
     app.add_handler(CommandHandler("onedrive_auth", onedrive_auth_command))
-    app.add_handler(CommandHandler("onedrive_test", onedrive_test_command))          # <-- single registration
+    app.add_handler(CommandHandler("onedrive_test", onedrive_test_command))
     app.add_handler(CommandHandler("onedrive_code", onedrive_complete_auth_command))
+    app.add_handler(CommandHandler("onedrive_code_url", onedrive_complete_auth_from_url_command))
     app.add_handler(CommandHandler("direct_auth", direct_auth_command))
     app.add_handler(CommandHandler("delete", delete_command))
     app.add_handler(CommandHandler("modify", modify_command))
@@ -4703,6 +4808,7 @@ def main():
     app.add_handler(CommandHandler("manual_upload", manual_upload_command))
     app.add_handler(CommandHandler("check_sync", check_sync_status_command))
     app.add_handler(CommandHandler("sync", force_sync_command))
+
     
     # Add message handler
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
