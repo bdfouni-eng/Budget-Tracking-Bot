@@ -2,7 +2,7 @@
 BUDGET TRACKER BOT - LINUX VERSION WITH ONEDRIVE API
 Optimized for Ubuntu 22.04 aarch64 on Oracle Cloud
 """
-
+import random
 import functools
 import os
 import re
@@ -300,6 +300,211 @@ def _graph_request(
     except Exception as e:
         return False, str(e), None
 
+def _graph_request_with_retry(
+    method: str,
+    url: str,
+    token: str,
+    *,
+    json_body: Optional[dict] = None,
+    timeout: int = 60,
+    max_retries: int = 6,
+) -> Tuple[bool, str, Optional[dict]]:
+    """
+    Retry wrapper for transient Graph workbook errors (503/504/502/429).
+    """
+    for attempt in range(1, max_retries + 1):
+        ok, msg, data = _graph_request(method, url, token, json_body=json_body, timeout=timeout)
+        if ok:
+            return ok, msg, data
+
+        # msg looks like: "503: ...." or "429: ...."
+        status = None
+        try:
+            status = int(str(msg).split(":", 1)[0].strip())
+        except Exception:
+            status = None
+
+        if status in (429, 502, 503, 504):
+            # exponential backoff with jitter
+            sleep_s = min(20.0, (2 ** (attempt - 1)) + random.random())
+            logger.warning(f"Graph transient error {status}. Retry {attempt}/{max_retries} in {sleep_s:.1f}s. msg={msg}")
+            time.sleep(sleep_s)
+            continue
+
+        # Non-retryable error
+        return False, msg, None
+
+    return False, f"Max retries exceeded. Last error: {msg}", None
+
+def graph_get_table_row_count() -> Tuple[bool, str, Optional[int]]:
+    """Return number of rows in the Excel Table via Graph."""
+    token = get_onedrive_token()
+    if not token:
+        return False, "❌ Not authenticated with OneDrive.", None
+
+    file_path = ONEDRIVE_FILE_PATH.replace(" ", "%20")
+    url = (
+        f"https://graph.microsoft.com/v1.0/me/drive/root:{file_path}:/workbook/"
+        f"tables/{TRACKING_TABLE_NAME}/rows?$top=2000"
+    )
+
+    ok, msg, data = _graph_request_with_retry("GET", url, token, timeout=60)
+    if not ok:
+        return False, msg, None
+
+    try:
+        return True, "OK", len((data or {}).get("value", []))
+    except Exception as e:
+        return False, f"Bad response: {e}", None
+
+def _worksheet_row_to_table_index(row: int) -> int:
+    """
+    Convert worksheet row number to 0-based Excel Table row index.
+    Assuming:
+    - Header row is at worksheet row 11 (table header)
+    - First data row is worksheet row 12 (table index 0)
+    """
+    # Subtract 12 because:
+    # Row 12 (first transaction) -> Index 0
+    # Row 13 -> Index 1
+    # etc.
+    return row - 12
+
+def graph_delete_transaction_at_row(row: int) -> Tuple[bool, str]:
+    """
+    Physically removes the row in the table via Microsoft Graph DELETE endpoint.
+    This reduces the table's length and shifts up all rows below.
+    """
+    token = get_onedrive_token()
+    if not token:
+        return False, "❌ Not authenticated with OneDrive. Use /onedrive_auth first."
+
+    if row < 12:
+        return False, f"❌ Invalid row: {row}. First transaction row is 12."
+
+    index = _worksheet_row_to_table_index(row)
+    file_path = ONEDRIVE_FILE_PATH.replace(" ", "%20")
+
+    url = (
+        f"https://graph.microsoft.com/v1.0/me/drive/root:{file_path}:/workbook/"
+        f"tables/{TRACKING_TABLE_NAME}/rows/itemAt(index={index})"
+    )
+
+    # Make the DELETE request
+    ok, msg, _ = _graph_request("DELETE", url, token, timeout=30)
+    if ok:
+        return True, f"✅ Transaction deleted by removing table row {row} (table index {index}). Table shrank and rows shifted up."
+    return False, f"❌ Graph DELETE failed: {msg}"
+
+def graph_get_table_row_values(index: int) -> Tuple[bool, str, Optional[List[Any]]]:
+     """Read one table row (all table columns) as a list via Graph."""
+     token = get_onedrive_token()
+     if not token:
+         return False, "❌ Not authenticated with OneDrive.", None
+ 
+     file_path = ONEDRIVE_FILE_PATH.replace(" ", "%20")
+     url = (
+         f"https://graph.microsoft.com/v1.0/me/drive/root:{file_path}:/workbook/"
+         f"tables/{TRACKING_TABLE_NAME}/rows/itemAt(index={index})/range"
+     )
+ 
+     ok, msg, data = _graph_request_with_retry("GET", url, token, timeout=60)
+     if not ok:
+         return False, msg, None
+ 
+     try:
+         values = (data or {}).get("values", [])
+         if not values or not values[0]:
+             return True, "OK", []
+         return True, "OK", values[0]
+     except Exception as e:
+         return False, f"Bad response: {e}", None
+ 
+ 
+def graph_set_table_row_values(index: int, row_values: List[Any]) -> Tuple[bool, str]:
+     """Write one table row (all table columns) via Graph."""
+     token = get_onedrive_token()
+     if not token:
+         return False, "❌ Not authenticated with OneDrive."
+ 
+     # ensure 13 columns
+     row_values = (row_values + [None] * 13)[:13]
+ 
+     file_path = ONEDRIVE_FILE_PATH.replace(" ", "%20")
+     url = (
+         f"https://graph.microsoft.com/v1.0/me/drive/root:{file_path}:/workbook/"
+         f"tables/{TRACKING_TABLE_NAME}/rows/itemAt(index={index})/range"
+     )
+ 
+     ok, msg, _ = _graph_request_with_retry("PATCH", url, token, json_body={"values": [row_values]}, timeout=60)
+     if ok:
+         return True, "OK"
+     return False, msg
+
+def graph_update_transaction_at_row(
+    row: int,
+    *,
+    date_value,
+    payment: str,
+    tx_type: str,
+    category: str,
+    subcategory: str,
+    usd: Optional[float],
+    lbp: Optional[float],
+    euro: Optional[float],
+    details: Optional[str],
+) -> Tuple[bool, str]:
+    """Update a transaction row in the Excel Table using Graph (preserves shapes/formulas)."""
+    token = get_onedrive_token()
+    if not token:
+        return False, "❌ Not authenticated with OneDrive. Use /onedrive_auth first."
+
+    if row < 12:
+        return False, f"❌ Invalid row: {row}. First transaction row is 12."
+
+    index = _worksheet_row_to_table_index(row)
+    file_path = ONEDRIVE_FILE_PATH.replace(" ", "%20")
+
+    # Update by PATCHing the range of that row
+    url = (
+        f"https://graph.microsoft.com/v1.0/me/drive/root:{file_path}:/workbook/"
+        f"tables/{TRACKING_TABLE_NAME}/rows/itemAt(index={index})/range"
+    )
+
+    # Force date-only format: YYYY-MM-DD
+    from datetime import datetime, date
+
+    def _to_iso_date_only(value) -> str:
+        if isinstance(value, datetime):
+            return value.date().isoformat()
+        if isinstance(value, date):
+            return value.isoformat()
+        s = str(value)
+        # If already like 2026-01-22T00:00:00 -> keep only date part
+        return s.split("T")[0]
+
+    date_str = _to_iso_date_only(date_value)
+
+    row_values = [
+        date_str,         # C Date
+        payment,          # D Payment Type
+        tx_type,          # E Type
+        category,         # F Category
+        subcategory,      # G Sub-Category
+        usd,              # H Amount $
+        lbp,              # I Amount LBP
+        euro,             # J Amount €
+        details or None,  # K Details
+        None,             # L Balance $ (formula)
+        None,             # M Balance LBP (formula)
+        None,             # N Balance € (formula)
+        None,             # O Effective Date (formula)
+    ]
+
+    ok, msg, _ = _graph_request("PATCH", url, token, json_body={"values": [row_values]}, timeout=60)
+    if ok:
+        return True, f"✅ Transaction updated (Graph) at row {row} (table index {index})."
+    return False, f"❌ Graph update failed: {msg}"
 
 def append_transaction_to_tracking_table(
     *,
@@ -405,8 +610,6 @@ def download_from_onedrive() -> Tuple[bool, str]:
     except Exception as e:
         logger.error(f"Error downloading from OneDrive: {str(e)}")
         return False, f"❌ Download error: {str(e)[:200]}"
-
-
 
 def copy_excel_from_onedrive() -> Tuple[bool, str]:
     """Download fresh copy from OneDrive before operations"""
@@ -1788,19 +1991,19 @@ def get_recent_transactions(count: int = 10) -> List[Dict]:
 # ========== DELETE / MODIFY FUNCTIONS (openpyxl) ==========
 
 def delete_transaction_at_row(row: int) -> Tuple[bool, str, Optional[Dict]]:
-    """Delete a transaction with safe Excel handling for Linux"""
+    """Delete a transaction using Graph table row delete (preserves workbook/shapes)."""
     try:
         logger.info(f"Deleting transaction at row {row}")
 
-        # 1. Download fresh copy
+        # 1) Download fresh copy (only to read what we're deleting)
         success, msg = copy_excel_from_onedrive()
         if not success:
             return False, f"❌ {msg}", None
 
-        # 2. Load workbook to get transaction data before deleting
+        # 2) Read transaction data before deleting (for confirmation message)
         deleted_transaction = None
         try:
-            wb = load_workbook(str(LOCAL_COPY_PATH), data_only=True, read_only=True)
+            wb = load_workbook(str(LOCAL_COPY_PATH), data_only=True, read_only=True, keep_vba=True)
             sheet = wb[TRACKING_SHEET_NAME]
 
             if row < 12 or row > 1000:
@@ -1812,7 +2015,6 @@ def delete_transaction_at_row(row: int) -> Tuple[bool, str, Optional[Dict]]:
                 wb.close()
                 return False, f"❌ No transaction at row {row}", None
 
-            # Capture transaction data
             deleted_transaction = {
                 "row": row,
                 "date": cell_value,
@@ -1828,60 +2030,28 @@ def delete_transaction_at_row(row: int) -> Tuple[bool, str, Optional[Dict]]:
             wb.close()
         except Exception as e:
             logger.error(f"Error reading transaction: {e}")
-            return False, f"❌ Error reading Excel file", None
+            return False, "❌ Error reading Excel file", None
 
-        # 3. Delete using safe save
-        values_to_clear = {}
-        for col in ["C", "D", "E", "F", "G", "H", "I", "J", "K"]:
-            values_to_clear[f"{col}{row}"] = None
+        # 3) Delete via Graph (table API)
+        del_ok, del_msg = graph_delete_transaction_at_row(row)
+        if not del_ok:
+            return False, del_msg, None
 
-        # Save safely
-        saved = save_excel_safely(LOCAL_COPY_PATH, TRACKING_SHEET_NAME, row, values_to_clear)
+        # 4) Build response
+        date_val = deleted_transaction["date"]
+        date_str = date_val.strftime("%d/%m/%Y") if hasattr(date_val, "strftime") else str(date_val)
+        item = deleted_transaction["subcategory"] or deleted_transaction["category"]
 
-        if not saved:
-            return False, "❌ Error saving Excel file (format issue)", None
-
-        # 4. Verify the file is still valid
-        try:
-            test_wb = load_workbook(str(LOCAL_COPY_PATH), read_only=True, data_only=True)
-            test_wb.close()
-        except Exception as e:
-            logger.error(f"Excel file corrupted after delete: {e}")
-            return False, "❌ Excel file became corrupted after delete", None
-
-        # 5. Try to upload (but don't fail if OneDrive is busy)
-        upload_success = False
-        upload_msg = ""
-
-        try:
-            # Wait a moment before upload
-            time.sleep(2)
-            upload_success, upload_msg = save_excel_to_onedrive()
-        except Exception as e:
-            logger.warning(f"Upload failed but delete succeeded: {e}")
-            upload_msg = f"Upload error: {str(e)[:100]}"
-
-        # 6. Format response
-        date_val = deleted_transaction['date']
-        date_str = date_val.strftime("%d/%m/%Y") if hasattr(date_val, 'strftime') else str(date_val)
-        item = deleted_transaction['subcategory'] or deleted_transaction['category']
-
-        if upload_success:
-            response = f"✅ <b>Transaction Deleted Successfully!</b>\n\n🗑️ <b>Deleted:</b> {item}"
-        else:
-            response = (
-                f"✅ <b>Transaction Deleted Locally!</b>\n\n"
-                f"🗑️ <b>Deleted:</b> {item}\n"
-                f"📅 <b>Date:</b> {date_str}\n\n"
-                f"⚠️ <b>OneDrive Status:</b> {upload_msg}\n"
-                f"✅ <b>Local Status:</b> Saved\n\n"
-                f"<i>File is saved locally. Use /sync to upload later.</i>"
-            )
-
+        response = (
+            f"✅ <b>Transaction Deleted Successfully!</b>\n\n"
+            f"🗑️ <b>Deleted:</b> {item}\n"
+            f"📅 <b>Date:</b> {date_str}\n"
+            f"{del_msg}"
+        )
         return True, response, deleted_transaction
 
     except Exception as e:
-        logger.error(f"Delete error: {e}", exc_info=True)
+        logger.error("Delete error", exc_info=True)
         return False, f"❌ Error: {str(e)[:200]}", None
 
 async def debug_onedrive_command(update, context):
@@ -1978,27 +2148,27 @@ def modify_transaction_at_row(
     new_payment_type: Optional[str] = None,
     new_notes: Optional[str] = None,
 ) -> Tuple[bool, str, Optional[Dict]]:
-    """Modify selected fields at a specific row using openpyxl."""
+    """Modify selected fields at a specific row using Microsoft Graph (preserves shapes/formulas)."""
     try:
         if row < 12 or row > 1000:
             return False, f"❌ Invalid row number: {row}", None
 
+        # Download fresh copy only for reading original + matching tables
         success, msg = copy_excel_from_onedrive()
         if not success:
             return False, f"❌ {msg}", None
 
-        with excel_lock:
-            if not EXCEL_AVAILABLE:
-                return False, "❌ openpyxl not installed. Install: pip install openpyxl pandas", None
+        if not EXCEL_AVAILABLE:
+            return False, "❌ openpyxl not installed. Install: pip install openpyxl pandas", None
 
-            wb = load_workbook(str(LOCAL_COPY_PATH), keep_vba=True)
+        with excel_lock:
+            wb = load_workbook(str(LOCAL_COPY_PATH), keep_vba=True, read_only=True, data_only=True)
             sheet = wb[TRACKING_SHEET_NAME]
 
             if sheet[f"C{row}"].value in [None, ""]:
                 wb.close()
                 return False, f"❌ No transaction found at row {row}", None
 
-            # Snapshot original
             original = {
                 "row": row,
                 "date": sheet[f"C{row}"].value,
@@ -2011,105 +2181,105 @@ def modify_transaction_at_row(
                 "euro": sheet[f"J{row}"].value,
                 "notes": sheet[f"K{row}"].value or "",
             }
-            modified = original.copy()
-            changes = []
-
-            # 1) Subcategory change with smart matching
-            if new_subcategory:
-                tables = load_all_tables_with_details()
-                if not tables:
-                    wb.close()
-                    return False, "❌ No tables found in Dropdown Data sheet", None
-
-                matched, category, match_type, confidence = find_best_match_for_input(new_subcategory, tables)
-                if confidence < MINIMUM_CONFIDENCE:
-                    wb.close()
-                    return False, (
-                        f"❌ Modification Rejected\n\n"
-                        f"New item: {new_subcategory}\n"
-                        f"Confidence: {confidence*100:.1f}% (need ≥ {MINIMUM_CONFIDENCE*100:.0f}%)\n"
-                        f"Reason: {match_type}"
-                    ), None
-
-                sheet[f"F{row}"].value = category
-                sheet[f"G{row}"].value = matched
-                changes.append(f"Item: '{original['subcategory']}' → '{matched}'")
-                modified["category"] = category
-                modified["subcategory"] = matched
-
-            # 2) Payment type
-            if new_payment_type is not None:
-                sheet[f"D{row}"].value = new_payment_type
-                changes.append(f"Payment: '{original['payment']}' → '{new_payment_type}'")
-                modified["payment"] = new_payment_type
-
-            # 3) Currency amounts
-            if new_currency_amounts:
-                # Clear old amounts
-                for col in ["H","I","J"]:
-                    sheet[f"{col}{row}"].value = None
-
-                for curr, amt in new_currency_amounts.items():
-                    if curr in CURRENCIES and amt is not None:
-                        col = CURRENCIES[curr].column
-                        sheet[f"{col}{row}"].value = float(amt)
-                        modified[curr.lower()] = amt
-
-                # Build readable change string
-                old_parts, new_parts = [], []
-                for curr in ["USD","LBP","EURO"]:
-                    old_val = original.get(curr.lower())
-                    new_val = modified.get(curr.lower())
-                    if old_val is not None or new_val is not None:
-                        old_parts.append(format_currency_amount(old_val, curr) if old_val is not None else "None")
-                        new_parts.append(format_currency_amount(new_val, curr) if new_val is not None else "None")
-                if old_parts or new_parts:
-                    changes.append(f"Amount: {' + '.join(old_parts) if old_parts else 'None'} → {' + '.join(new_parts) if new_parts else 'None'}")
-
-            # 4) Notes
-            if new_notes is not None:
-                if new_notes.strip():
-                    clean = new_notes.strip()
-                    if len(clean) > 500:
-                        clean = clean[:497] + "..."
-                    sheet[f"K{row}"].value = clean
-                    modified["notes"] = clean
-                    old_preview = original["notes"][:50] + "..." if original["notes"] and len(original["notes"]) > 50 else (original["notes"] or "None")
-                    new_preview = clean[:50] + "..." if len(clean) > 50 else clean
-                    changes.append(f"Notes: '{old_preview}' → '{new_preview}'")
-                else:
-                    sheet[f"K{row}"].value = None
-                    modified["notes"] = None
-                    changes.append(f"Notes: '{original['notes'] or 'None'}' → 'None'")
-
-            # 5) Append modification note
-            if changes:
-                existing_notes = sheet[f"K{row}"].value or ""
-                mod_note = f"\n\n[Modified {datetime.now().strftime('%Y-%m-%d %H:%M')}: {', '.join(changes)}]"
-                if "[Modified" not in (existing_notes or ""):
-                    new_notes_value = (existing_notes or "") + mod_note
-                    if len(new_notes_value) > 500:
-                        new_notes_value = new_notes_value[-500:]
-                    sheet[f"K{row}"].value = new_notes_value
-
-            # Save workbook
-            wb.save(str(LOCAL_COPY_PATH))
             wb.close()
 
-        # Sync back
-        saved, save_msg = save_excel_to_onedrive()
-        if saved:
-            success_msg = "✅ Transaction modified successfully!\n\n" + "\n".join([f"• {c}" for c in changes]) if changes else "ℹ️ Nothing changed."
-            return True, success_msg, modified
-        else:
-            warn_msg = "⚠️ Transaction modified locally, but OneDrive sync failed:\n" + save_msg
-            if changes:
-                warn_msg += "\n\n" + "\n".join([f"• {c}" for c in changes])
-            return True, warn_msg, modified
+        modified = original.copy()
+        changes: List[str] = []
+
+        # 1) Subcategory change with smart matching
+        if new_subcategory:
+            tables = load_all_tables_with_details()
+            if not tables:
+                return False, "❌ No tables found in Dropdown Data sheet", None
+
+            matched, category, match_type, confidence = find_best_match_for_input(new_subcategory, tables)
+            if confidence < MINIMUM_CONFIDENCE:
+                return False, (
+                    f"❌ Modification Rejected\n\n"
+                    f"New item: {new_subcategory}\n"
+                    f"Confidence: {confidence*100:.1f}% (need ≥ {MINIMUM_CONFIDENCE*100:.0f}%)\n"
+                    f"Reason: {match_type}"
+                ), None
+
+            modified["category"] = category
+            modified["subcategory"] = matched
+            changes.append(f"Item: '{original['subcategory']}' → '{matched}'")
+
+        # 2) Payment type
+        if new_payment_type is not None:
+            modified["payment"] = new_payment_type
+            changes.append(f"Payment: '{original['payment']}' → '{new_payment_type}'")
+
+        # 3) Currency amounts
+        if new_currency_amounts:
+            # Clear first
+            modified["usd"] = None
+            modified["lbp"] = None
+            modified["euro"] = None
+
+            for curr, amt in new_currency_amounts.items():
+                if curr == "USD":
+                    modified["usd"] = float(amt) if amt is not None else None
+                elif curr == "LBP":
+                    modified["lbp"] = float(amt) if amt is not None else None
+                elif curr == "EURO":
+                    modified["euro"] = float(amt) if amt is not None else None
+
+            # change summary
+            old_parts, new_parts = [], []
+            for curr in ["USD", "LBP", "EURO"]:
+                o = original.get(curr.lower())
+                n = modified.get(curr.lower())
+                if o is not None or n is not None:
+                    old_parts.append(format_currency_amount(o, curr) if o is not None else "None")
+                    new_parts.append(format_currency_amount(n, curr) if n is not None else "None")
+            changes.append(f"Amount: {' + '.join(old_parts) if old_parts else 'None'} → {' + '.join(new_parts) if new_parts else 'None'}")
+
+        # 4) Details/Notes column (K)
+        # If user provided notes, replace the base notes; if they provided empty, clear; if None, keep existing.
+        details_value = original.get("notes") or ""
+        if new_notes is not None:
+            if new_notes.strip():
+                details_value = new_notes.strip()
+            else:
+                details_value = ""
+
+        # 5) Append a LIMITED modification marker
+        if changes:
+            marker = f"[Modified {datetime.now().strftime('%Y-%m-%d %H:%M')}]"
+            # Only add marker once (don’t keep stacking)
+            if "[Modified" not in details_value:
+                details_value = (details_value + ("\n\n" if details_value else "") + marker).strip()
+
+        modified["notes"] = details_value
+
+        # If nothing changed, return early
+        if not changes and new_notes is None:
+            return True, "ℹ️ Nothing changed.", original
+
+        # Apply update via Graph (this preserves shapes + formulas)
+        graph_ok, graph_msg = graph_update_transaction_at_row(
+            row,
+            date_value=modified["date"],
+            payment=modified["payment"],
+            tx_type=modified["type"],
+            category=modified["category"],
+            subcategory=modified["subcategory"],
+            usd=modified.get("usd"),
+            lbp=modified.get("lbp"),
+            euro=modified.get("euro"),
+            details=modified.get("notes"),
+        )
+
+        if not graph_ok:
+            return False, graph_msg, None
+
+        success_msg = "✅ Transaction modified successfully!\n\n" + "\n".join([f"• {c}" for c in changes])
+        return True, success_msg, modified
 
     except Exception as e:
+        logger.error("Error modifying transaction", exc_info=True)
         return False, f"❌ Error modifying transaction: {str(e)[:200]}", None
-
 
 # ========== NEW: DOWNLOAD/EXPORT FUNCTIONS ==========
 
