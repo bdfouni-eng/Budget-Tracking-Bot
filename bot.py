@@ -3375,13 +3375,28 @@ def find_best_match_for_input(input_text: str, tables_dict: Dict) -> Tuple[str, 
     best_score = 0.0
     match_type = "No match"
 
-    # SIMPLIFY: Just split by spaces, no complex regex
-    input_words = set(normalized_input.split())
+    def _tokenize_for_matching(text: str) -> set:
+        """Tokenize text while ignoring pure-numeric tokens that come from amount parsing leftovers."""
+        tokens = set()
+        for token in text.split():
+            token = token.strip()
+            if not token:
+                continue
+            # Ignore standalone numbers (e.g., "20") so "Fuel Opel 20" doesn't bias matching
+            if re.fullmatch(r"\d+(?:\.\d+)?", token):
+                continue
+            tokens.add(token)
+        return tokens
+
+    input_words = _tokenize_for_matching(normalized_input)
+    if not input_words:
+        return "", "Unknown", "No meaningful words after normalization", 0.0
 
     for category, data in tables_dict.items():
         for variation, original in data['variations'].items():
-            # SIMPLIFY: Split variation by spaces
-            variation_words = set(variation.split())
+            variation_words = _tokenize_for_matching(variation)
+            if not variation_words:
+                continue
 
             # Calculate intersection
             intersection = len(input_words.intersection(variation_words))
@@ -3391,14 +3406,23 @@ def find_best_match_for_input(input_text: str, tables_dict: Dict) -> Tuple[str, 
                 score = intersection / union
 
                 # Boost for exact matches
-                if normalized_input == variation:
+                if input_words == variation_words:
                     score = 1.0
-                elif normalized_input in variation:
+                # For phrase containment, avoid over-boosting one-word variations
+                elif len(variation_words) > 1 and len(input_words) > 1 and variation_words.issubset(input_words):
                     score = max(score, 0.8)
-                elif variation in normalized_input:
-                    score = max(score, 0.8)
+                elif len(variation_words) == 1 and len(input_words) > 1:
+                    # Penalize generic one-word matches when the input has multiple words
+                    score *= 0.5
 
-                if score > best_score:
+                if (
+                    score > best_score
+                    or (
+                        score == best_score
+                        and best_match is not None
+                        and len(variation_words) > len(_tokenize_for_matching(normalize_text_for_matching(best_match)))
+                    )
+                ):
                     best_score = score
                     best_match = original
                     best_category = category
